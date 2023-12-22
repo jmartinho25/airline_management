@@ -56,13 +56,6 @@ build CMakeFiles/Project_2.dir/Airport.cpp.o: CXX_COMPILER__Project_2_unscanned_
   OBJECT_DIR = CMakeFiles/Project_2.dir
   OBJECT_FILE_DIR = CMakeFiles/Project_2.dir
 
-build CMakeFiles/Project_2.dir/AirportCollection.cpp.o: CXX_COMPILER__Project_2_unscanned_Debug /home/darksystem/Desktop/AED/Project$ 2/AirportCollection.cpp || cmake_object_order_depends_target_Project_2
-  DEP_FILE = CMakeFiles/Project_2.dir/AirportCollection.cpp.o.d
-  FLAGS = -g -fdiagnostics-color=always
-  INCLUDES = -I"/home/darksystem/Desktop/AED/Project 2/."
-  OBJECT_DIR = CMakeFiles/Project_2.dir
-  OBJECT_FILE_DIR = CMakeFiles/Project_2.dir
-
 build CMakeFiles/Project_2.dir/Flight.cpp.o: CXX_COMPILER__Project_2_unscanned_Debug /home/darksystem/Desktop/AED/Project$ 2/Flight.cpp || cmake_object_order_depends_target_Project_2
   DEP_FILE = CMakeFiles/Project_2.dir/Flight.cpp.o.d
   FLAGS = -g -fdiagnostics-color=always
@@ -77,6 +70,27 @@ build CMakeFiles/Project_2.dir/Parsing.cpp.o: CXX_COMPILER__Project_2_unscanned_
   OBJECT_DIR = CMakeFiles/Project_2.dir
   OBJECT_FILE_DIR = CMakeFiles/Project_2.dir
 
+build CMakeFiles/Project_2.dir/Airlines.cpp.o: CXX_COMPILER__Project_2_unscanned_Debug /home/darksystem/Desktop/AED/Project$ 2/Airlines.cpp || cmake_object_order_depends_target_Project_2
+  DEP_FILE = CMakeFiles/Project_2.dir/Airlines.cpp.o.d
+  FLAGS = -g -fdiagnostics-color=always
+  INCLUDES = -I"/home/darksystem/Desktop/AED/Project 2/."
+  OBJECT_DIR = CMakeFiles/Project_2.dir
+  OBJECT_FILE_DIR = CMakeFiles/Project_2.dir
+
+build CMakeFiles/Project_2.dir/AirportsGraph.cpp.o: CXX_COMPILER__Project_2_unscanned_Debug /home/darksystem/Desktop/AED/Project$ 2/AirportsGraph.cpp || cmake_object_order_depends_target_Project_2
+  DEP_FILE = CMakeFiles/Project_2.dir/AirportsGraph.cpp.o.d
+  FLAGS = -g -fdiagnostics-color=always
+  INCLUDES = -I"/home/darksystem/Desktop/AED/Project 2/."
+  OBJECT_DIR = CMakeFiles/Project_2.dir
+  OBJECT_FILE_DIR = CMakeFiles/Project_2.dir
+
+build CMakeFiles/Project_2.dir/main.cpp.o: CXX_COMPILER__Project_2_unscanned_Debug /home/darksystem/Desktop/AED/Project$ 2/main.cpp || cmake_object_order_depends_target_Project_2
+  DEP_FILE = CMakeFiles/Project_2.dir/main.cpp.o.d
+  FLAGS = -g -fdiagnostics-color=always
+  INCLUDES = -I"/home/darksystem/Desktop/AED/Project 2/."
+  OBJECT_DIR = CMakeFiles/Project_2.dir
+  OBJECT_FILE_DIR = CMakeFiles/Project_2.dir
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target Project_2
@@ -85,7 +99,7 @@ build CMakeFiles/Project_2.dir/Parsing.cpp.o: CXX_COMPILER__Project_2_unscanned_
 #############################################
 # Link the executable Project_2
 
-build Project_2: CXX_EXECUTABLE_LINKER__Project_2_Debug CMakeFiles/Project_2.dir/Airport.cpp.o CMakeFiles/Project_2.dir/AirportCollection.cpp.o CMakeFiles/Project_2.dir/Flight.cpp.o CMakeFiles/Project_2.dir/Parsing.cpp.o
+build Project_2: CXX_EXECUTABLE_LINKER__Project_2_Debug CMakeFiles/Project_2.dir/Airport.cpp.o CMakeFiles/Project_2.dir/Flight.cpp.o CMakeFiles/Project_2.dir/Parsing.cpp.o CMakeFiles/Project_2.dir/Airlines.cpp.o CMakeFiles/Project_2.dir/AirportsGraph.cpp.o CMakeFiles/Project_2.dir/main.cpp.o
   FLAGS = -g
   OBJECT_DIR = CMakeFiles/Project_2.dir
   POST_BUILD = :

@@ -3,12 +3,13 @@
 //
 #include "Parsing.h"
 #include "Graph.h"
-#include "AirportCollection.h"
+#include "Airport.h"
+#include "AirportsGraph.h"
 #include <fstream>
 #include <sstream>
 
 
-void Parsing::parseAirports(const std::string &filename,AirportCollection &airportCollection){
+void Parsing::parseAirports(const std::string &filename,AirportsGraph &airportsGraph){
     std::ifstream file(filename);
     std::string line;
     getline(file,line);
@@ -23,10 +24,9 @@ void Parsing::parseAirports(const std::string &filename,AirportCollection &airpo
             std::getline(linestream, country, ',');
             linestream>>latitude>>delimiter;
             linestream>>longitude;
-            airportCollection.insert(new Airport(code,name,city,country,latitude,longitude));
-
-
+            airportsGraph.addAirport(code, name, city, country, latitude, longitude);
 
 
     }
 }
+

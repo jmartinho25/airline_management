@@ -1,3 +1,5 @@
+#ifndef AIRPORT_H
+#define AIRPORT_H
 #include <string>
 #include <vector>
 #include "Flight.h"
@@ -23,8 +25,11 @@ public:
     std::vector<Flight>& getFlights() { return flights; }
 
     void addFlight(const Flight& flight) { flights.push_back(flight); }
-    void removeFlight(const Flight& flight) { flights.erase(std::remove(flights.begin(), flights.end(), flight), flights.end()); }
+    //void removeFlight(const Flight& flight) { flights.erase(std::remove(flights.begin(), flights.end(), flight), flights.end()); }
+    bool operator==(const Airport& other) const {
+        return code == other.code; // Assuming 'code' uniquely identifies an airport
+    }
 };
+#endif // AIRPORT_H
 
 
-#endif //PROJECT_2_AIRPORT_H

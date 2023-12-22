@@ -1,3 +1,6 @@
+#ifndef FLIGHT_H
+#define FLIGHT_H
+
 #include <string>
 
 class Flight {
@@ -12,3 +15,4 @@ public:
     std::string getTargetAirportCode() const { return targetAirportCode; }
     std::string getAirlineCode() const { return airlineCode; }
 };
+#endif // FLIGHT_

@@ -12,7 +12,10 @@ add_executable(Project_2
         Graph.h
         Airport.h
         Airport.cpp
-        AirportCollection.cpp
-        AirportCollection.h
         Flight.cpp
-        Parsing.cpp)
+        Parsing.cpp
+        Airlines.h
+        Airlines.cpp
+        AirportsGraph.h
+        AirportsGraph.cpp
+        main.cpp)

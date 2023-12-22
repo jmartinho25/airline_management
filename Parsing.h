@@ -7,12 +7,13 @@
 
 
 #include <string>
-#include "AirportCollection.h"
+#include "Airport.h"
+#include "AirportsGraph.h"
 
 class Parsing {
     public:
 
-    void parseAirports(const std::__cxx11::basic_string<char> &filename, AirportCollection &airportCollection);
+    void parseAirports(const std::string &filename, AirportsGraph &airportsGraph);
 };
 
 
