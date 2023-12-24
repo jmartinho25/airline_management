@@ -14,5 +14,10 @@ public:
     std::string getSourceAirportCode() const { return sourceAirportCode; }
     std::string getTargetAirportCode() const { return targetAirportCode; }
     std::string getAirlineCode() const { return airlineCode; }
-};
-#endif // FLIGHT_
+    bool operator==(const Flight& other) const {
+        return sourceAirportCode == other.sourceAirportCode &&
+               targetAirportCode == other.targetAirportCode &&
+               airlineCode == other.airlineCode;
+    }
+    };
+#endif // FLIGHT_H

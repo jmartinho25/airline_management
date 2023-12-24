@@ -8,10 +8,12 @@
 
 #include "Airport.h"
 #include "Graph.h"
+#include "Airlines.h"
 
 class AirportsGraph {
 private:
     Graph<Airport> airportsGraph;
+    std::vector<Airline> airlines;
 
 public:
     bool addAirport(const std::string& code, const std::string& name, const std::string& city,
@@ -19,9 +21,20 @@ public:
 
     bool removeAirport(const std::string& code);
 
-    bool addFlight(const std::string& sourceCode, const std::string& targetCode);
 
     const Graph<Airport>& getGraph() const;
+
+    void addAirline(const Airline& airline) {
+        airlines.push_back(airline);
+    }
+
+    const std::vector<Airline>& getAirlines() const {
+        return airlines;
+    }
+
+    bool addFlight(const string &sourceCode, const string &targetCode, const string &airline);
+
+    void addFlight(const Flight &flight);
 };
 
 

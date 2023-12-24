@@ -11,12 +11,12 @@ bool AirportsGraph::removeAirport(const std::string& code) {
     return airportsGraph.removeVertex(airportToRemove);
 }
 
-bool AirportsGraph::addFlight(const std::string& sourceCode, const std::string& targetCode) {
+bool AirportsGraph::addFlight(const std::string& sourceCode, const std::string& targetCode, const std::string& airline) {
     Vertex<Airport>* sourceVertex = airportsGraph.findVertex(Airport(sourceCode, "", "", "", 0.0, 0.0));
     Vertex<Airport>* targetVertex = airportsGraph.findVertex(Airport(targetCode, "", "", "", 0.0, 0.0));
 
     if (sourceVertex && targetVertex) {
-        return airportsGraph.addEdge(sourceVertex->getInfo(), targetVertex->getInfo(), 0.0);  // Weight can be added if needed
+        return airportsGraph.addEdge(sourceVertex->getInfo(), targetVertex->getInfo(), 0.0,airline);  // Weight can be added if needed
     }
 
     return false;

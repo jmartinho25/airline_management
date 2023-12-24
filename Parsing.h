@@ -14,6 +14,10 @@ class Parsing {
     public:
 
     void parseAirports(const std::string &filename, AirportsGraph &airportsGraph);
+
+    void parseAirlines(const string &filename, AirportsGraph &airportsGraph);
+
+    void parseFlights(const string &filename, AirportsGraph &airportsGraph);
 };
 
 
