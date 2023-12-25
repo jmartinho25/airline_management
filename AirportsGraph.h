@@ -34,7 +34,7 @@ public:
 
     bool addFlight(const string &sourceCode, const string &targetCode, const string &airline);
 
-    void addFlight(const Flight &flight);
+
 };
 
 

@@ -18,4 +18,7 @@ add_executable(Project_2
         Airlines.cpp
         AirportsGraph.h
         AirportsGraph.cpp
-        main.cpp)
+        main.cpp
+        FlightManager.cpp
+        Menu.h
+        Menu.cpp)

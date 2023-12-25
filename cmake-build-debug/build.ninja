@@ -91,6 +91,20 @@ build CMakeFiles/Project_2.dir/main.cpp.o: CXX_COMPILER__Project_2_unscanned_Deb
   OBJECT_DIR = CMakeFiles/Project_2.dir
   OBJECT_FILE_DIR = CMakeFiles/Project_2.dir
 
+build CMakeFiles/Project_2.dir/FlightManager.cpp.o: CXX_COMPILER__Project_2_unscanned_Debug /home/darksystem/Desktop/AED/Project$ 2/FlightManager.cpp || cmake_object_order_depends_target_Project_2
+  DEP_FILE = CMakeFiles/Project_2.dir/FlightManager.cpp.o.d
+  FLAGS = -g -fdiagnostics-color=always
+  INCLUDES = -I"/home/darksystem/Desktop/AED/Project 2/."
+  OBJECT_DIR = CMakeFiles/Project_2.dir
+  OBJECT_FILE_DIR = CMakeFiles/Project_2.dir
+
+build CMakeFiles/Project_2.dir/Menu.cpp.o: CXX_COMPILER__Project_2_unscanned_Debug /home/darksystem/Desktop/AED/Project$ 2/Menu.cpp || cmake_object_order_depends_target_Project_2
+  DEP_FILE = CMakeFiles/Project_2.dir/Menu.cpp.o.d
+  FLAGS = -g -fdiagnostics-color=always
+  INCLUDES = -I"/home/darksystem/Desktop/AED/Project 2/."
+  OBJECT_DIR = CMakeFiles/Project_2.dir
+  OBJECT_FILE_DIR = CMakeFiles/Project_2.dir
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target Project_2
@@ -99,7 +113,7 @@ build CMakeFiles/Project_2.dir/main.cpp.o: CXX_COMPILER__Project_2_unscanned_Deb
 #############################################
 # Link the executable Project_2
 
-build Project_2: CXX_EXECUTABLE_LINKER__Project_2_Debug CMakeFiles/Project_2.dir/Airport.cpp.o CMakeFiles/Project_2.dir/Flight.cpp.o CMakeFiles/Project_2.dir/Parsing.cpp.o CMakeFiles/Project_2.dir/Airlines.cpp.o CMakeFiles/Project_2.dir/AirportsGraph.cpp.o CMakeFiles/Project_2.dir/main.cpp.o
+build Project_2: CXX_EXECUTABLE_LINKER__Project_2_Debug CMakeFiles/Project_2.dir/Airport.cpp.o CMakeFiles/Project_2.dir/Flight.cpp.o CMakeFiles/Project_2.dir/Parsing.cpp.o CMakeFiles/Project_2.dir/Airlines.cpp.o CMakeFiles/Project_2.dir/AirportsGraph.cpp.o CMakeFiles/Project_2.dir/main.cpp.o CMakeFiles/Project_2.dir/FlightManager.cpp.o CMakeFiles/Project_2.dir/Menu.cpp.o
   FLAGS = -g
   OBJECT_DIR = CMakeFiles/Project_2.dir
   POST_BUILD = :

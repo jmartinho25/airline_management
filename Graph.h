@@ -71,6 +71,9 @@ public:
     void setWeight(double weight);
     friend class Graph<T>;
     friend class Vertex<T>;
+    const string &getAirlineCode() {
+        return airlineCode;
+    }
 };
 
 template <class T>
