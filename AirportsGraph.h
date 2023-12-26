@@ -6,6 +6,7 @@
 #define PROJECT_2_AIRPORTSGRAPH_H
 
 
+#include <unordered_set>
 #include "Airport.h"
 #include "Graph.h"
 #include "Airlines.h"
@@ -33,6 +34,7 @@ public:
     }
 
     bool addFlight(const string &sourceCode, const string &targetCode, const string &airline);
+
 
 
 };

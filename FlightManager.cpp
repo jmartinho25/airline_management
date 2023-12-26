@@ -9,6 +9,7 @@
 #include <set>
 #include <map>
 #include <unordered_set>
+#include <stack>
 
 FlightManager::FlightManager() {;
 }
@@ -266,7 +267,58 @@ void FlightManager::listReachableDestinations(const std::string &airportCode, in
     std::cout << "Number of reachable destinations: " << resultCount << std::endl;
 }
 
+void FlightManager::listmaxstopsbetweenairports() {
+    int maxStops = 0;
+    std::list<std::pair<std::string, std::string>> maxTripAirports;
+
+    for (auto sourceVertex : airportsGraph.getGraph().getVertexSet()) {
+        std::list<std::pair<std::string,std::string>> aux;
+            int stops = calculateStopsBFS(sourceVertex, aux);
+            if (stops > maxStops) {
+                maxStops = stops;
+                maxTripAirports = aux;
+            } else if (stops == maxStops) {
+                maxTripAirports.merge(aux);
+
+            }
+        }
 
 
+    std::cout << "Maximum Trip with " << maxStops << " stops:" << std::endl;
+    for (const auto& airports : maxTripAirports) {
+        std::cout << "Source: " << airports.first << " | Destination: " << airports.second << std::endl;
+    }
+}
 
+int FlightManager::calculateStopsBFS(Vertex<Airport>* source, std::list<std::pair<std::string,std::string>> &aux) {
+    int maxdistance = 0;
+    for(auto *vertex:airportsGraph.getGraph().getVertexSet()){
+        vertex->setVisited(false);
+        vertex->setProcessing(false);
+    }
+    std::queue<std::pair<Vertex<Airport>*, int>> q;
+    q.push({source, 0});
+    source->setProcessing(true);
 
+    while (!q.empty()) {
+        auto current = q.front().first;
+        if(q.front().second>maxdistance){
+            maxdistance=q.front().second;
+            aux ={{source->getInfo().getCode(),current->getInfo().getCode()}};
+        }else if(q.front().second==maxdistance){
+            aux.merge({{source->getInfo().getCode(),current->getInfo().getCode()}});
+        }
+
+        for (const Edge<Airport>& edge : current->getAdj()) {
+            if(edge.getDest()->isVisited()) continue;
+            if(edge.getDest()->isProcessing()) continue;
+            q.push({edge.getDest(),q.front().second+1});
+            edge.getDest()->setProcessing(true);
+        }
+        q.pop();
+        current->setVisited(true);
+        current->setProcessing(false);
+    }
+
+    return maxdistance;
+}

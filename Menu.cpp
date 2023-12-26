@@ -24,6 +24,7 @@ void Menu::displayMenu() {
                 std::cout << "4. View number of different countries that a given airport per city flies to" << std::endl;
                 std::cout << "5. View number of destinations available for a given airport" << std::endl;
                 std::cout << "6. View number of reachable destinations from a airport given a max nº of stops" << std::endl;
+                std::cout << "7. Display the flight trips between airports with the greatest stops in between them" << std::endl;
                 std::cout << "0. Exit" << std::endl;
 
                 std::cout << "Enter your choice: ";
@@ -51,7 +52,10 @@ void Menu::displayMenu() {
                         listReachableDestinationsWithStops();
                         break;
                     case 7:
-                        listReachableDestinationsWithStops();
+                        listmaxstopsbetweenairports();
+                        break;
+                    case 8:
+
                         break;
 
 
@@ -135,5 +139,10 @@ void Menu::listReachableDestinationsWithStops() {
     std::cin >> criteria;
 
     managementSystem.listReachableDestinations(airportCode, maxStops, criteria);
+}
+
+void Menu::listmaxstopsbetweenairports() {
+    managementSystem.listmaxstopsbetweenairports();
+
 }
 

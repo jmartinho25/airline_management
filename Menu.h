@@ -28,6 +28,8 @@ private:
     void listnrdestavailable();
 
     void listReachableDestinationsWithStops();
+
+    void listmaxstopsbetweenairports();
 };
 
 

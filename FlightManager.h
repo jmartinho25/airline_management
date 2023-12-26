@@ -31,6 +31,11 @@ public:
     void listnrdestavailable();
 
     void listReachableDestinations(const string &airportCode, int maxStops, int criteria);
+
+    void listmaxstopsbetweenairports();
+
+
+    int calculateStopsBFS(Vertex<Airport> *source, list<std::pair<std::string, std::string>> &aux);
 };
 
 

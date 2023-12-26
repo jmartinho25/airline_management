@@ -342,6 +342,7 @@ void Graph<T>::dfsVisit(Vertex<T> *v, vector<T> & res) const {
 }
 
 
+
 /****************** DFS ********************/
 /*
  * Performs a depth-first search (dfs) in a graph (this).
