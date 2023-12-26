@@ -1,6 +1,3 @@
-//
-// Created by darksystem on 22-12-2023.
-//
 
 #ifndef PROJECT_2_AIRLINES_H
 #define PROJECT_2_AIRLINES_H

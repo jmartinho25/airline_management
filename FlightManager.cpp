@@ -1,6 +1,3 @@
-//
-// Created by darksystem on 25-12-2023.
-//
 
 #include "FlightManager.h"
 #include "Parsing.h"
@@ -132,10 +129,6 @@ void FlightManager::listnrdestavailable() {
 
     switch (choice) {
         case 1:
-//            cout << "Enter the airport code: ";
-//            string airportCode;
-//            cin >> airportCode;
-//            Vertex<Airport>* sourceVertex = airportsGraph.getGraph().findVertex(Airport(airportCode, "", "", "", 0.0, 0.0));
 
             if (sourceVertex) {
                 const std::vector<Edge<Airport>>& flights = sourceVertex->getAdj();
@@ -157,10 +150,6 @@ void FlightManager::listnrdestavailable() {
             }
             break;
         case 2:
-//            cout << "Enter the airport code: ";
-//            string airportCode;
-//            cin >> airportCode;
-//            Vertex<Airport>* sourceVertex = airportsGraph.getGraph().findVertex(Airport(airportCode, "", "", "", 0.0, 0.0));
 
             if (sourceVertex) {
                 const std::vector<Edge<Airport>>& flights = sourceVertex->getAdj();
