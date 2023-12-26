@@ -1,0 +1,23 @@
+# ninja log v5
+1	803	1703598413409296084	CMakeFiles/Project_2.dir/FlightManager.cpp.o	1d30563efb3d9db8
+1	13	1703279676366469618	CMakeFiles/Project_2.dir/Airlines.cpp.o	32515102edba0485
+0	189	1703376096223082487	CMakeFiles/Project_2.dir/Airport.cpp.o	226e40c36a697e95
+1	312	1703598216017396487	CMakeFiles/Project_2.dir/Menu.cpp.o	6b4f56a3a2b102c9
+803	893	1703598413497297626	Project_2	df25a7d6e11cf988
+1	182	1703373330837408563	CMakeFiles/Project_2.dir/Flight.cpp.o	2c501c50d6ac5d9b
+1	343	1703543143201214890	CMakeFiles/Project_2.dir/AirportsGraph.cpp.o	e5d1dcfba11401bb
+1	595	1703594867515124845	CMakeFiles/Project_2.dir/Parsing.cpp.o	f27fc32b9e8b8f92
+1	320	1703598216025396665	CMakeFiles/Project_2.dir/main.cpp.o	bf5084c1ea9e0be
+3	33	1703602644877239251	CMakeFiles/Project_2.dir/Airlines.cpp.o	7b8d568084bbf58c
+2	363	1703602645205242002	CMakeFiles/Project_2.dir/Flight.cpp.o	74904e59a1111829
+1	434	1703602645277242606	CMakeFiles/Project_2.dir/Airport.cpp.o	65ebcb1c11694db9
+3	776	1703602645617245457	CMakeFiles/Project_2.dir/main.cpp.o	8acc016855a893a1
+4	878	1703602645721246329	CMakeFiles/Project_2.dir/Menu.cpp.o	ec44c58fe610898c
+3	902	1703602645741246496	CMakeFiles/Project_2.dir/AirportsGraph.cpp.o	d82c3117884411c0
+2	1047	1703602645889247738	CMakeFiles/Project_2.dir/Parsing.cpp.o	88d63d23e96b678e
+4	1705	1703602646545253237	CMakeFiles/Project_2.dir/FlightManager.cpp.o	c3e19d9ca556f8cb
+1705	1864	1703602646705254578	Project_2	df25a7d6e11cf988
+1	431	1703603424975253237	CMakeFiles/Project_2.dir/main.cpp.o	8acc016855a893a1
+1	448	1703603424995253383	CMakeFiles/Project_2.dir/Menu.cpp.o	ec44c58fe610898c
+1	1120	1703603425663258258	CMakeFiles/Project_2.dir/FlightManager.cpp.o	c3e19d9ca556f8cb
+1120	1255	1703603425799259250	Project_2	df25a7d6e11cf988
