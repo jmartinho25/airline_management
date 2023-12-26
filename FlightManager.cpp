@@ -219,6 +219,59 @@ void FlightManager::listnrdestavailable() {
 
     }
 }
+void FlightManager::listReachableDestinations(const std::string &airportCode, int maxStops, int criteria) {
+    Vertex<Airport>* startVertex = airportsGraph.getGraph().findVertex(Airport(airportCode, "", "", "", 0.0, 0.0));
+    if (!startVertex) {
+        std::cout << "Airport not found." << std::endl;
+        return;
+    }
+
+    std::unordered_set<std::string> visitedAirports;
+    std::unordered_set<std::string> visitedCities;
+    std::unordered_set<std::string> visitedCountries;
+
+    std::queue<std::pair<Vertex<Airport>*, int>> queue;
+    queue.push({startVertex, 0});
+
+    while (!queue.empty()) {
+        auto [currentVertex, stops] = queue.front();
+        queue.pop();
+
+        if (stops > maxStops) continue;
+
+        Airport currentAirport = currentVertex->getInfo();
+        visitedAirports.insert(currentAirport.getCode());
+        visitedCities.insert(currentAirport.getCity());
+        visitedCountries.insert(currentAirport.getCountry());
+
+        for (const Edge<Airport>& edge : currentVertex->getAdj()) {
+            Vertex<Airport>* nextVertex = edge.getDest();
+            if (visitedAirports.find(nextVertex->getInfo().getCode()) == visitedAirports.end()) {
+                queue.push({nextVertex, stops + 1});
+            }
+        }
+    }
+
+    int resultCount = 0;
+    switch (criteria) {
+        case 1: // Airports
+            resultCount = visitedAirports.size();
+            break;
+        case 2: // Cities
+            resultCount = visitedCities.size();
+            break;
+        case 3: // Countries
+            resultCount = visitedCountries.size();
+            break;
+        default:
+            std::cout << "Invalid criteria." << std::endl;
+            return;
+    }
+
+    std::cout << "Number of reachable destinations: " << resultCount << std::endl;
+}
+
+
 
 
 

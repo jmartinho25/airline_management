@@ -29,6 +29,8 @@ public:
     void listdiffcountriesperairpercity();
 
     void listnrdestavailable();
+
+    void listReachableDestinations(const string &airportCode, int maxStops, int criteria);
 };
 
 

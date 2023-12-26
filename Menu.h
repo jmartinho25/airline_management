@@ -26,6 +26,8 @@ private:
     void listdiffcountriesperairpercity();
 
     void listnrdestavailable();
+
+    void listReachableDestinationsWithStops();
 };
 
 

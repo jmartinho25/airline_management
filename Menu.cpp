@@ -23,7 +23,7 @@ void Menu::displayMenu() {
                 std::cout << "3. View number of flights per city per airline" << std::endl;
                 std::cout << "4. View number of different countries that a given airport per city flies to" << std::endl;
                 std::cout << "5. View number of destinations available for a given airport" << std::endl;
-                std::cout << "6. View Students in Class" << std::endl;
+                std::cout << "6. View number of reachable destinations from a airport given a max nº of stops" << std::endl;
                 std::cout << "0. Exit" << std::endl;
 
                 std::cout << "Enter your choice: ";
@@ -48,7 +48,7 @@ void Menu::displayMenu() {
                         break;
 
                     case 6:
-//                        listStudentsInClass();
+                        listReachableDestinationsWithStops();
                         break;
 
 
@@ -114,3 +114,23 @@ void Menu::listnrdestavailable() {
     managementSystem.listnrdestavailable();
 
 }
+void Menu::listReachableDestinationsWithStops() {
+    std::string airportCode;
+    int maxStops, criteria;
+
+    std::cout << "Enter the airport code: ";
+    std::cin >> airportCode;
+
+    std::cout << "Enter the maximum number of stops: ";
+    std::cin >> maxStops;
+
+    std::cout << "Choose the criteria for destinations: " << std::endl;
+    std::cout << "1. Airports" << std::endl;
+    std::cout << "2. Cities" << std::endl;
+    std::cout << "3. Countries" << std::endl;
+    std::cout << "Enter your choice: ";
+    std::cin >> criteria;
+
+    managementSystem.listReachableDestinations(airportCode, maxStops, criteria);
+}
+
