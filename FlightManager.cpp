@@ -45,9 +45,9 @@ void FlightManager::listflightsfromairport() {
     std::cin>>airportCode;
     Vertex<Airport>* airport = airportsGraph.getGraph().findVertex(Airport(airportCode, "", "", "", 0.0, 0.0));
     if(airport) {
-        std::set<std::string> uniqueAirlines;
-        for(auto &flight:airport->getAdj()){
-            uniqueAirlines.insert(flight.getDest()->getInfo().getCode());
+        unordered_set<string> uniqueAirlines;
+        for(Edge<Airport> flight:airport->getAdj()){
+            uniqueAirlines.insert(flight.getAirlineCode());
         }
         std::cout << "Flights from Airport " << airportCode << ":" << std::endl;
         std::cout << "Number of flights: " << airport->getAdj().size() << std::endl;
@@ -132,7 +132,13 @@ void FlightManager::listnrdestavailable() {
 
             if (sourceVertex) {
                 const std::vector<Edge<Airport>>& flights = sourceVertex->getAdj();
-                int numAirportsAvailable = flights.size();
+                std::unordered_set<std::string> uniqueAirports;
+
+                for (const Edge<Airport>& flight : flights) {
+                    const Airport& targetAirport = flight.getDest()->getInfo();
+                    uniqueAirports.insert(targetAirport.getCode());
+                }
+                int numAirportsAvailable = uniqueAirports.size();
 
                 if (numAirportsAvailable > 0) {
                     std::cout << "Number of airports available for " << airportCode << ": " << numAirportsAvailable << std::endl;
@@ -243,13 +249,13 @@ void FlightManager::listReachableDestinations(const std::string &airportCode, in
 
     int resultCount = 0;
     switch (criteria) {
-        case 1: // Airports
+        case 1:
             resultCount = visitedAirports.size();
             break;
-        case 2: // Cities
+        case 2:
             resultCount = visitedCities.size();
             break;
-        case 3: // Countries
+        case 3:
             resultCount = visitedCountries.size();
             break;
         default:

@@ -50,6 +50,9 @@ void Menu::displayMenu() {
                     case 6:
                         listReachableDestinationsWithStops();
                         break;
+                    case 7:
+                        listReachableDestinationsWithStops();
+                        break;
 
 
                     case 0:
