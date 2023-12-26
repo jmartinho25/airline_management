@@ -59,7 +59,6 @@ void Parsing::parseFlights(const std::string &filename,AirportsGraph &airportsGr
         std::getline(linestream, source, ',');
         std::getline(linestream, target, ',');
         std::getline(linestream, airline, ',');
-        //Flight flight(source, target, airline);
         airportsGraph.addFlight(source, target, airline);
     }
 }

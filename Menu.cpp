@@ -22,7 +22,7 @@ void Menu::displayMenu() {
                 std::cout << "2. View number of flights out of an airport and from how many airlines" << std::endl;
                 std::cout << "3. View number of flights per city per airline" << std::endl;
                 std::cout << "4. View number of different countries that a given airport per city flies to" << std::endl;
-                std::cout << "5. View Schedule of a Class" << std::endl;
+                std::cout << "5. View number of destinations available for a given airport" << std::endl;
                 std::cout << "6. View Students in Class" << std::endl;
                 std::cout << "0. Exit" << std::endl;
 
@@ -44,8 +44,7 @@ void Menu::displayMenu() {
 
                         break;
                     case 5:
-                        cout << "VIEW CLASS SCHEDULE:" << endl;
-//                        listClassSchedule();
+                         listnrdestavailable();
                         break;
 
                     case 6:
@@ -108,5 +107,10 @@ void Menu::listflightspercityperairline() {
 
 void Menu::listdiffcountriesperairpercity() {
     managementSystem.listdiffcountriesperairpercity();
+
+}
+
+void Menu::listnrdestavailable() {
+    managementSystem.listnrdestavailable();
 
 }

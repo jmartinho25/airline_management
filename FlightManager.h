@@ -27,6 +27,8 @@ public:
     void listflightspercityperairline();
 
     void listdiffcountriesperairpercity();
+
+    void listnrdestavailable();
 };
 
 
