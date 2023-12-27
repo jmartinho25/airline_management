@@ -56,6 +56,12 @@ public:
     void bfocitytoairport(string cityname, string airport);
 
     Vertex<Airport> *findAirportVertexByName(string airportName);
+
+
+
+
+    void dfsVisit(Vertex<Airport> *pVertex, unordered_set<std::string> &airports, unordered_set<std::string> &cities,
+                  unordered_set<std::string> &countries);
 };
 
 

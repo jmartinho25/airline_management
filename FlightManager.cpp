@@ -119,106 +119,54 @@ void FlightManager::listdiffcountriesperairpercity() {
         std::cout << "Number of different countries flown to from " << city << ": " << numCountries << std::endl;
     }
 }
+void FlightManager::dfsVisit(Vertex<Airport> *pVertex, unordered_set<std::string> &airports, unordered_set<std::string> &cities,
+                             unordered_set<std::string> &countries) {
+    pVertex->setVisited(true);
+    airports.insert(pVertex->getInfo().getCode());
+    cities.insert(pVertex->getInfo().getCity() + ", " + pVertex->getInfo().getCountry());
+    countries.insert(pVertex->getInfo().getCountry());
+    for(auto &flight:pVertex->getAdj()){
+        if(!flight.getDest()->isVisited()){
+            dfsVisit(flight.getDest(),airports,cities,countries);
+        }
+    }
+
+
+
+}
 
 void FlightManager::listnrdestavailable() {
-    cout << "1. By airports" << endl;
-    cout << "2. By cities" << endl;
-    cout << "3. By countries" << endl;
-    cout << "Choose the criteria you would like the destinations to be showed in: ";
-    int choice;
-    cin >> choice;
+
     cout << "Enter the airport code: ";
     string airportCode;
     cin >> airportCode;
     Vertex<Airport> *sourceVertex = airportsGraph.getGraph().findVertex(Airport(airportCode, "", "", "", 0.0, 0.0));
+    if (sourceVertex) {
+        for(auto &vertex: airportsGraph.getGraph().getVertexSet()){
+            vertex->setVisited(false);
+        }
+        std::unordered_set<std::string> airports;
+        std::unordered_set<std::string> cities;
+        std::unordered_set<std::string> countries;
 
-    switch (choice) {
-        case 1:
+for(auto &flight:sourceVertex->getAdj()){
+    if(!flight.getDest()->isVisited()){
+        dfsVisit(flight.getDest(),airports,cities,countries);
+    }
+}
+    int aiportsAvailable = airports.size();
+    int citiesAvailable = cities.size();
+    int countriesAvailable = countries.size();
 
-            if (sourceVertex) {
-                const std::vector<Edge<Airport>> &flights = sourceVertex->getAdj();
-                std::unordered_set<std::string> uniqueAirports;
-
-                for (const Edge<Airport> &flight: flights) {
-                    const Airport &targetAirport = flight.getDest()->getInfo();
-                    uniqueAirports.insert(targetAirport.getCode());
-                }
-                int numAirportsAvailable = uniqueAirports.size();
-
-                if (numAirportsAvailable > 0) {
-                    std::cout << "Number of airports available for " << airportCode << ": " << numAirportsAvailable
+    std::cout << "Number of airports available for " << airportCode << ": " << aiportsAvailable
                               << std::endl;
-                    std::cout << "List of available airports:" << std::endl;
 
-                    for (const Edge<Airport> &flight: flights) {
-                        const Airport &targetAirport = flight.getDest()->getInfo();
-                        std::cout << "- " << targetAirport.getCode() << " (" << targetAirport.getName() << ")"
-                                  << std::endl;
-                    }
-                } else {
-                    std::cout << "No airports available for " << airportCode << std::endl;
-                }
-            } else {
-                std::cout << "Airport with code " << airportCode << " not found" << std::endl;
-            }
-            break;
-        case 2:
-
-            if (sourceVertex) {
-                const std::vector<Edge<Airport>> &flights = sourceVertex->getAdj();
-                std::unordered_set<std::string> uniqueCities;
-
-                for (const Edge<Airport> &flight: flights) {
-                    const Airport &targetAirport = flight.getDest()->getInfo();
-                    uniqueCities.insert(targetAirport.getCity());
-                }
-
-                int numCitiesAvailable = uniqueCities.size();
-
-                if (numCitiesAvailable > 0) {
-                    std::cout << "Number of cities available for " << airportCode << ": " << numCitiesAvailable
+    std::cout << "Number of cities available for " << airportCode << ": " << citiesAvailable
                               << std::endl;
-                    std::cout << "List of available cities:" << std::endl;
 
-                    for (const std::string &city: uniqueCities) {
-                        std::cout << "- " << city << std::endl;
-                    }
-                } else {
-                    std::cout << "No cities available for " << airportCode << std::endl;
-                }
-            } else {
-                std::cout << "Airport with code " << airportCode << " not found" << std::endl;
-            }
-            break;
-
-
-        case 3:
-            if (sourceVertex) {
-                const std::vector<Edge<Airport>> &flights = sourceVertex->getAdj();
-                std::unordered_set<std::string> uniqueCountries;
-
-                for (const Edge<Airport> &flight: flights) {
-                    const Airport &targetAirport = flight.getDest()->getInfo();
-                    uniqueCountries.insert(targetAirport.getCountry());
-                }
-
-                int numCountriesAvailable = uniqueCountries.size();
-
-                if (numCountriesAvailable > 0) {
-                    std::cout << "Number of countries available for " << airportCode << ": " << numCountriesAvailable
+    std::cout << "Number of countries available for " << airportCode << ": " << countriesAvailable
                               << std::endl;
-                    std::cout << "List of available countries:" << std::endl;
 
-                    for (const std::string &country: uniqueCountries) {
-                        std::cout << "- " << country << std::endl;
-                    }
-                } else {
-                    std::cout << "No countries available for " << airportCode << std::endl;
-                }
-            } else {
-                std::cout << "Airport with code " << airportCode << " not found" << std::endl;
-            }
-            break;
 
 
     }
@@ -682,6 +630,8 @@ void FlightManager::bfocitytoairport(string cityName, string airport) {
         std::cout << "No valid flight path found between any airport in " << cityName << " and " << airport << std::endl;
     }
 }
+
+
 
 
 
