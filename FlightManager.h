@@ -34,8 +34,9 @@ public:
 
     void listmaxstopsbetweenairports();
 
+    int calculateStopsBFS(Vertex<Airport> *source, vector<std::pair<std::string, std::string>> &aux);
 
-    int calculateStopsBFS(Vertex<Airport> *source, list<std::pair<std::string, std::string>> &aux);
+    void identifytopkairport();
 };
 
 

@@ -25,6 +25,7 @@ void Menu::displayMenu() {
                 std::cout << "5. View number of destinations available for a given airport" << std::endl;
                 std::cout << "6. View number of reachable destinations from a airport given a max nº of stops" << std::endl;
                 std::cout << "7. Display the flight trips between airports with the greatest stops in between them" << std::endl;
+                std::cout << "8. List the top K airports with the greatest air traffic capacity" << std::endl;
                 std::cout << "0. Exit" << std::endl;
 
                 std::cout << "Enter your choice: ";
@@ -55,7 +56,7 @@ void Menu::displayMenu() {
                         listmaxstopsbetweenairports();
                         break;
                     case 8:
-
+                        identifytopkairport();
                         break;
 
 
@@ -143,6 +144,11 @@ void Menu::listReachableDestinationsWithStops() {
 
 void Menu::listmaxstopsbetweenairports() {
     managementSystem.listmaxstopsbetweenairports();
+
+}
+
+void Menu::identifytopkairport() {
+    managementSystem.identifytopkairport();
 
 }
 

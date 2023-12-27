@@ -56,6 +56,10 @@ public:
 
     friend class Graph<T>;
 
+    void increaseInDegree() {
+        indegree++;
+
+    }
 };
 
 template <class T>

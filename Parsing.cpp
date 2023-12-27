@@ -28,6 +28,7 @@ void Parsing::parseAirports(const std::string &filename,AirportsGraph &airportsG
             airportsGraph.addAirport(code, name, city, country, latitude, longitude);
 
 
+
     }
 }
 void Parsing::parseAirlines(const std::string &filename,AirportsGraph &airportsGraph){

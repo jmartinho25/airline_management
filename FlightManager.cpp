@@ -10,6 +10,7 @@
 #include <map>
 #include <unordered_set>
 #include <stack>
+#include <algorithm>
 
 FlightManager::FlightManager() {;
 }
@@ -216,73 +217,124 @@ void FlightManager::listnrdestavailable() {
     }
 }
 void FlightManager::listReachableDestinations(const std::string &airportCode, int maxStops, int criteria) {
-    Vertex<Airport>* startVertex = airportsGraph.getGraph().findVertex(Airport(airportCode, "", "", "", 0.0, 0.0));
-    if (!startVertex) {
-        std::cout << "Airport not found." << std::endl;
-        return;
-    }
+//    Vertex<Airport>* startVertex = airportsGraph.getGraph().findVertex(Airport(airportCode, "", "", "", 0.0, 0.0));
+//    if (!startVertex) {
+//        std::cout << "Airport not found." << std::endl;
+//        return;
+//    }
+//
+//    std::unordered_set<std::string> visitedAirports;
+//    std::unordered_set<std::string> visitedCities;
+//    std::unordered_set<std::string> visitedCountries;
+//
+//    std::queue<std::pair<Vertex<Airport>*, int>> queue;
+//    queue.push({startVertex, 0});
+//
+//    while (!queue.empty()) {
+//        auto [currentVertex, stops] = queue.front();
+//        queue.pop();
+//
+//        if (stops > maxStops) continue;
+//
+//        Airport currentAirport = currentVertex->getInfo();
+//        visitedAirports.insert(currentAirport.getCode());
+//        visitedCities.insert(currentAirport.getCity());
+//        visitedCountries.insert(currentAirport.getCountry());
+//
+//        for (const Edge<Airport>& edge : currentVertex->getAdj()) {
+//            Vertex<Airport>* nextVertex = edge.getDest();
+//            if (visitedAirports.find(nextVertex->getInfo().getCode()) == visitedAirports.end()) {
+//                queue.push({nextVertex, stops + 1});
+//            }
+//        }
+//    }
+//
+//    int resultCount = 0;
+//    switch (criteria) {
+//        case 1:
+//            resultCount = visitedAirports.size();
+//            break;
+//        case 2:
+//            resultCount = visitedCities.size();
+//            break;
+//        case 3:
+//            resultCount = visitedCountries.size();
+//            break;
+//        default:
+//            std::cout << "Invalid criteria." << std::endl;
+//            return;
+//    }
+//
+//    std::cout << "Number of reachable destinations: " << resultCount << std::endl;
+//}
 
-    std::unordered_set<std::string> visitedAirports;
-    std::unordered_set<std::string> visitedCities;
-    std::unordered_set<std::string> visitedCountries;
+        Vertex<Airport>* startVertex = airportsGraph.getGraph().findVertex(Airport(airportCode, "", "", "", 0.0, 0.0));
+        if (!startVertex) {
+            std::cout << "Airport not found." << std::endl;
+            return;
+        }
 
-    std::queue<std::pair<Vertex<Airport>*, int>> queue;
-    queue.push({startVertex, 0});
+        std::unordered_set<std::string> visitedAirports;
+        std::unordered_set<std::string> visitedCities;
+        std::unordered_set<std::string> visitedCountries;
 
-    while (!queue.empty()) {
-        auto [currentVertex, stops] = queue.front();
-        queue.pop();
+        std::queue<std::pair<Vertex<Airport>*, int>> queue;
+        queue.push({startVertex, 0});
 
-        if (stops > maxStops) continue;
+        while (!queue.empty()) {
+            auto [currentVertex, stops] = queue.front();
+            queue.pop();
 
-        Airport currentAirport = currentVertex->getInfo();
-        visitedAirports.insert(currentAirport.getCode());
-        visitedCities.insert(currentAirport.getCity());
-        visitedCountries.insert(currentAirport.getCountry());
+            if (stops > maxStops) continue;
 
-        for (const Edge<Airport>& edge : currentVertex->getAdj()) {
-            Vertex<Airport>* nextVertex = edge.getDest();
-            if (visitedAirports.find(nextVertex->getInfo().getCode()) == visitedAirports.end()) {
-                queue.push({nextVertex, stops + 1});
+            Airport currentAirport = currentVertex->getInfo();
+            visitedAirports.insert(currentAirport.getCode());
+            // Create a unique identifier for each city by combining the city name and the country name
+            visitedCities.insert(currentAirport.getCity() + ", " + currentAirport.getCountry());
+            visitedCountries.insert(currentAirport.getCountry());
+
+            for (const Edge<Airport>& edge : currentVertex->getAdj()) {
+                Vertex<Airport>* nextVertex = edge.getDest();
+                if (visitedAirports.find(nextVertex->getInfo().getCode()) == visitedAirports.end()) {
+                    queue.push({nextVertex, stops + 1});
+                }
             }
         }
+
+        int resultCount = 0;
+        switch (criteria) {
+            case 1:
+                resultCount = visitedAirports.size();
+                break;
+            case 2:
+                resultCount = visitedCities.size();
+                break;
+            case 3:
+                resultCount = visitedCountries.size();
+                break;
+            default:
+                std::cout << "Invalid criteria." << std::endl;
+                return;
+        }
+
+        std::cout << "Number of reachable destinations: " << resultCount << std::endl;
     }
 
-    int resultCount = 0;
-    switch (criteria) {
-        case 1:
-            resultCount = visitedAirports.size();
-            break;
-        case 2:
-            resultCount = visitedCities.size();
-            break;
-        case 3:
-            resultCount = visitedCountries.size();
-            break;
-        default:
-            std::cout << "Invalid criteria." << std::endl;
-            return;
-    }
-
-    std::cout << "Number of reachable destinations: " << resultCount << std::endl;
-}
 
 void FlightManager::listmaxstopsbetweenairports() {
     int maxStops = 0;
-    std::list<std::pair<std::string, std::string>> maxTripAirports;
+    std::vector<std::pair<std::string, std::string>> maxTripAirports;
 
     for (auto sourceVertex : airportsGraph.getGraph().getVertexSet()) {
-        std::list<std::pair<std::string,std::string>> aux;
-            int stops = calculateStopsBFS(sourceVertex, aux);
-            if (stops > maxStops) {
-                maxStops = stops;
-                maxTripAirports = aux;
-            } else if (stops == maxStops) {
-                maxTripAirports.merge(aux);
-
-            }
+        std::vector<std::pair<std::string,std::string>> aux;
+        int stops = calculateStopsBFS(sourceVertex, aux);
+        if (stops > maxStops) {
+            maxStops = stops;
+            maxTripAirports = aux;
+        } else if (stops == maxStops) {
+            maxTripAirports.insert(maxTripAirports.end(), aux.begin(), aux.end());
         }
-
+    }
 
     std::cout << "Maximum Trip with " << maxStops << " stops:" << std::endl;
     for (const auto& airports : maxTripAirports) {
@@ -290,7 +342,7 @@ void FlightManager::listmaxstopsbetweenairports() {
     }
 }
 
-int FlightManager::calculateStopsBFS(Vertex<Airport>* source, std::list<std::pair<std::string,std::string>> &aux) {
+int FlightManager::calculateStopsBFS(Vertex<Airport>* source, std::vector<std::pair<std::string,std::string>> &aux) {
     int maxdistance = 0;
     for(auto *vertex:airportsGraph.getGraph().getVertexSet()){
         vertex->setVisited(false);
@@ -306,7 +358,7 @@ int FlightManager::calculateStopsBFS(Vertex<Airport>* source, std::list<std::pai
             maxdistance=q.front().second;
             aux ={{source->getInfo().getCode(),current->getInfo().getCode()}};
         }else if(q.front().second==maxdistance){
-            aux.merge({{source->getInfo().getCode(),current->getInfo().getCode()}});
+            aux.push_back({source->getInfo().getCode(),current->getInfo().getCode()});
         }
 
         for (const Edge<Airport>& edge : current->getAdj()) {
@@ -321,4 +373,26 @@ int FlightManager::calculateStopsBFS(Vertex<Airport>* source, std::list<std::pai
     }
 
     return maxdistance;
+}
+bool compareAirportTraffic(const std::pair<std::string, int>& a, const std::pair<std::string, int>& b) {
+    return a.second > b.second;
+}
+
+void FlightManager::identifytopkairport() {
+    int k;
+    std::cout << "Enter the number of airports to display: ";
+    std::cin >> k;
+    std::vector<std::pair<std::string, int>> airportTraffic;
+    for (auto airportVertex : airportsGraph.getGraph().getVertexSet()) {
+        int inDegree = airportVertex->getIndegree();
+        int outDegree = airportVertex->getAdj().size();
+        int totalTraffic = inDegree + outDegree;
+        airportTraffic.push_back({airportVertex->getInfo().getCode(), totalTraffic});
+    }
+    std::sort(airportTraffic.begin(), airportTraffic.end(), compareAirportTraffic);
+    std::cout << "Top " << k << " Airports by Traffic Capacity:" << std::endl;
+    for (int i = 0; i < k && i < airportTraffic.size(); ++i) {
+        std::cout << "Airport Code: " << airportTraffic[i].first
+                  << " | Total Traffic Capacity: " << airportTraffic[i].second << std::endl;
+    }
 }
