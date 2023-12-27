@@ -30,6 +30,7 @@ void Menu::displayMenu() {
                 std::cout << "7. Display the flight trips between airports with the greatest stops in between them"
                           << std::endl;
                 std::cout << "8. List the top K airports with the greatest air traffic capacity" << std::endl;
+                std::cout << "9. Identify the airports that are essential to the network´s circulation capability"<<std::endl;
                 std::cout << "0. Exit" << std::endl;
 
                 std::cout << "Enter your choice: ";
@@ -61,6 +62,10 @@ void Menu::displayMenu() {
                         break;
                     case 8:
                         identifytopkairport();
+                        break;
+
+                    case 9:
+                        findEssentialAirports();
                         break;
 
 
@@ -154,5 +159,9 @@ void Menu::listmaxstopsbetweenairports() {
 void Menu::identifytopkairport() {
     managementSystem.identifytopkairport();
 
+}
+
+void Menu::findEssentialAirports(){
+    managementSystem.findEssentialAirports();
 }
 

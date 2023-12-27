@@ -40,6 +40,13 @@ public:
     int calculateStopsBFS(Vertex<Airport> *source, vector<std::pair<std::string, std::string>> &aux);
 
     void identifytopkairport();
+
+    void findEssentialAirportsUtil(const std::string &u, std::unordered_map<std::string, int> &disc,
+                                    std::unordered_map<std::string, int> &low,
+                                    std::unordered_map<std::string, std::string> &parent,
+                                    std::unordered_set<std::string> &articulationPoints, int &time);
+
+    void findEssentialAirports();
 };
 
 

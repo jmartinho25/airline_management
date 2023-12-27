@@ -352,3 +352,61 @@ void FlightManager::identifytopkairport() {
                   << " | Total Traffic Capacity: " << airportTraffic[i].second << std::endl;
     }
 }
+
+void FlightManager::findEssentialAirports() {
+    int time = 0;
+    std::unordered_set<std::string> essentialAirports;
+
+    std::unordered_map<std::string, int> disc;
+
+    std::unordered_map<std::string, int> low;
+
+    std::unordered_map<std::string, std::string> parent;
+
+    for (const auto &vertex : airportsGraph.getGraph().getVertexSet()) {
+        const std::string &v = vertex->getInfo().getCode();
+        if (disc.find(v) == disc.end()) {
+            FlightManager::findEssentialAirportsUtil(v, disc, low, parent, essentialAirports, time);
+        }
+    }
+
+    if(essentialAirports.size()==0){
+        std::cout<<"No Essential Airports were found"<<std::endl;
+    }
+    else {
+        std::cout<<"There are "<<essentialAirports.size()<<" Essential Airports"<<std::endl;
+        std::cout << "Essential Airports: "<<std::endl;
+        for (const auto &airport: essentialAirports) {
+            std::cout << "- "<<airport << std::endl;
+        }
+    }
+}
+
+void FlightManager::findEssentialAirportsUtil(const std::string &u, std::unordered_map<std::string, int> &disc,
+                                std::unordered_map<std::string, int> &low,
+                                std::unordered_map<std::string, std::string> &parent,
+                                std::unordered_set<std::string> &essentialAirports, int &time) {
+
+    disc[u] = low[u] = ++time;
+    int children = 0;
+
+    for (const Edge<Airport> &edge : airportsGraph.getGraph().findVertex(Airport(u, "", "", "", 0.0, 0.0))->getAdj()) {
+        const std::string &v = edge.getDest()->getInfo().getCode();
+
+        if (disc.find(v) == disc.end()) {
+            children++;
+            parent[v] = u;
+
+            findEssentialAirportsUtil(v, disc, low, parent, essentialAirports, time);
+
+            low[u] = std::min(low[u], low[v]);
+
+            if ((parent.find(u) == parent.end() && children > 1) ||
+                (parent.find(u) != parent.end() && low[v] >= disc[u])) {
+                essentialAirports.insert(u);
+            }
+        } else if (v != parent[u]) {
+            low[u] = std::min(low[u], disc[v]);
+        }
+    }
+}

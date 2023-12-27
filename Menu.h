@@ -34,6 +34,8 @@ private:
     void listmaxstopsbetweenairports();
 
     void identifytopkairport();
+
+    void findEssentialAirports();
 };
 
 
