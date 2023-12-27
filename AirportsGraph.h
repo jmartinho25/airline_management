@@ -17,24 +17,23 @@ private:
     std::vector<Airline> airlines;
 
 public:
-    bool addAirport(const std::string& code, const std::string& name, const std::string& city,
-                    const std::string& country, double latitude, double longitude);
+    bool addAirport(const std::string &code, const std::string &name, const std::string &city,
+                    const std::string &country, double latitude, double longitude);
 
-    bool removeAirport(const std::string& code);
+    bool removeAirport(const std::string &code);
 
 
-    const Graph<Airport>& getGraph() const;
+    const Graph<Airport> &getGraph() const;
 
-    void addAirline(const Airline& airline) {
+    void addAirline(const Airline &airline) {
         airlines.push_back(airline);
     }
 
-    const std::vector<Airline>& getAirlines() const {
+    const std::vector<Airline> &getAirlines() const {
         return airlines;
     }
 
     bool addFlight(const string &sourceCode, const string &targetCode, const string &airline);
-
 
 
 };

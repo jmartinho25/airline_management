@@ -11,7 +11,7 @@
 #include "AirportsGraph.h"
 
 class Parsing {
-    public:
+public:
 
     void parseAirports(const std::string &filename, AirportsGraph &airportsGraph);
 

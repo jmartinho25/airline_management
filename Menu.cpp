@@ -4,6 +4,7 @@
 
 #include "Menu.h"
 #include <iostream>
+
 void Menu::displayMenu() {
     int choice;
     do {
@@ -21,10 +22,13 @@ void Menu::displayMenu() {
                 std::cout << "1. View global number of airports and number of available flights" << std::endl;
                 std::cout << "2. View number of flights out of an airport and from how many airlines" << std::endl;
                 std::cout << "3. View number of flights per city per airline" << std::endl;
-                std::cout << "4. View number of different countries that a given airport per city flies to" << std::endl;
+                std::cout << "4. View number of different countries that a given airport per city flies to"
+                          << std::endl;
                 std::cout << "5. View number of destinations available for a given airport" << std::endl;
-                std::cout << "6. View number of reachable destinations from a airport given a max nº of stops" << std::endl;
-                std::cout << "7. Display the flight trips between airports with the greatest stops in between them" << std::endl;
+                std::cout << "6. View number of reachable destinations from a airport given a max nº of stops"
+                          << std::endl;
+                std::cout << "7. Display the flight trips between airports with the greatest stops in between them"
+                          << std::endl;
                 std::cout << "8. List the top K airports with the greatest air traffic capacity" << std::endl;
                 std::cout << "0. Exit" << std::endl;
 
@@ -38,7 +42,7 @@ void Menu::displayMenu() {
                         listflightsfromairport();
                         break;
                     case 3:
-                         listflightspercityperairline();
+                        listflightspercityperairline();
                         break;
 
                     case 4:
@@ -46,7 +50,7 @@ void Menu::displayMenu() {
 
                         break;
                     case 5:
-                         listnrdestavailable();
+                        listnrdestavailable();
                         break;
 
                     case 6:
@@ -107,7 +111,6 @@ void Menu::listflightsfromairport() {
 }
 
 
-
 void Menu::listflightspercityperairline() {
     managementSystem.listflightspercityperairline();
 
@@ -122,6 +125,7 @@ void Menu::listnrdestavailable() {
     managementSystem.listnrdestavailable();
 
 }
+
 void Menu::listReachableDestinationsWithStops() {
     std::string airportCode;
     int maxStops, criteria;

@@ -10,28 +10,28 @@
 #include <sstream>
 
 
-void Parsing::parseAirports(const std::string &filename,AirportsGraph &airportsGraph){
+void Parsing::parseAirports(const std::string &filename, AirportsGraph &airportsGraph) {
     std::ifstream file(filename);
     std::string line;
-    getline(file,line);
-    while(getline(file,line)){
-            std::stringstream linestream(line);
-            std::string code, name, city, country;
-            float latitude,longitude;
-            char delimiter;
-            std::getline(linestream, code, ',');
-            std::getline(linestream, name, ',');
-            std::getline(linestream, city, ',');
-            std::getline(linestream, country, ',');
-            linestream>>latitude>>delimiter;
-            linestream>>longitude;
-            airportsGraph.addAirport(code, name, city, country, latitude, longitude);
-
+    getline(file, line);
+    while (getline(file, line)) {
+        std::stringstream linestream(line);
+        std::string code, name, city, country;
+        float latitude, longitude;
+        char delimiter;
+        std::getline(linestream, code, ',');
+        std::getline(linestream, name, ',');
+        std::getline(linestream, city, ',');
+        std::getline(linestream, country, ',');
+        linestream >> latitude >> delimiter;
+        linestream >> longitude;
+        airportsGraph.addAirport(code, name, city, country, latitude, longitude);
 
 
     }
 }
-void Parsing::parseAirlines(const std::string &filename,AirportsGraph &airportsGraph){
+
+void Parsing::parseAirlines(const std::string &filename, AirportsGraph &airportsGraph) {
     std::ifstream file(filename);
     std::string line;
     getline(file, line);
@@ -49,7 +49,7 @@ void Parsing::parseAirlines(const std::string &filename,AirportsGraph &airportsG
 
 }
 
-void Parsing::parseFlights(const std::string &filename,AirportsGraph &airportsGraph){
+void Parsing::parseFlights(const std::string &filename, AirportsGraph &airportsGraph) {
     std::ifstream file(filename);
     std::string line;
     getline(file, line);

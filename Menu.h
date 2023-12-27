@@ -11,10 +11,12 @@
 class Menu {
 public:
     Menu(FlightManager &system) : managementSystem(system) {};
+
     void displayMenu();
 
 private:
     FlightManager &managementSystem;
+
     void listnrairportsflights();
 
     void listflightsfromairport();

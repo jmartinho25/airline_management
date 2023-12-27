@@ -4,6 +4,7 @@
 
 #ifndef PROJECT_2_FLIGHTMANAGER_H
 #define PROJECT_2_FLIGHTMANAGER_H
+
 #include "AirportsGraph.h"
 
 
@@ -14,7 +15,9 @@ public:
     FlightManager();
 
     void loadAirports(const std::string &filename);
+
     void loadAirlines(const std::string &filename);
+
     void loadFlights(const std::string &filename);
 
 
@@ -38,7 +41,6 @@ public:
 
     void identifytopkairport();
 };
-
 
 
 #endif //PROJECT_2_FLIGHTMANAGER_H
