@@ -11,6 +11,7 @@
 #include <unordered_set>
 #include <stack>
 #include <algorithm>
+#include <climits>
 
 FlightManager::FlightManager() {
     ;
@@ -411,3 +412,153 @@ void FlightManager::findEssentialAirportsUtil(const std::string &u, std::unorder
         }
     }
 }
+Vertex<Airport>* FlightManager::findAirportVertexByName(string airportName) {
+for (const auto &vertex : airportsGraph.getGraph().getVertexSet()) {
+const Airport &airport = vertex->getInfo();
+if (airport.getName() == airportName) {
+return vertex;
+}
+}
+return nullptr;
+}
+
+void FlightManager::bfoairporttoairport(string airportCode1, string airportCode2){
+    Vertex<Airport>* sourceVertex;
+    Vertex<Airport>* targetVertex;
+
+    if (airportCode1.size() > 3) {
+        sourceVertex = findAirportVertexByName(airportCode1);
+    } else if (airportCode1.size() == 3) {
+        sourceVertex = airportsGraph.getGraph().findVertex(Airport(airportCode1, "", "", "", 0.0, 0.0));
+    } else {
+        std::cout << "Invalid source airport code" << std::endl;
+        return;
+    }
+
+    if (airportCode2.size() > 3) {
+        targetVertex = findAirportVertexByName(airportCode2);
+    } else if (airportCode2.size() == 3) {
+        targetVertex = airportsGraph.getGraph().findVertex(Airport(airportCode2, "", "", "", 0.0, 0.0));
+    } else {
+        std::cout << "Invalid target airport code" << std::endl;
+        return;
+    }
+
+    if (!sourceVertex || !targetVertex) {
+        std::cout << "Airport not found" << std::endl;
+        return;
+    }
+
+    std::unordered_map<Vertex<Airport>*, std::pair<int, std::vector<Airport>>> paths;
+    std::queue<Vertex<Airport>*> queue;
+
+    queue.push(sourceVertex);
+    paths[sourceVertex] = {0, {sourceVertex->getInfo()}};
+
+    while (!queue.empty()) {
+        Vertex<Airport>* currentVertex = queue.front();
+        queue.pop();
+
+        for (const Edge<Airport>& edge : currentVertex->getAdj()) {
+            Vertex<Airport>* nextVertex = edge.getDest();
+
+            if (paths.find(nextVertex) == paths.end() || paths[nextVertex].first > paths[currentVertex].first + 1) {
+                paths[nextVertex] = {paths[currentVertex].first + 1, paths[currentVertex].second};
+                paths[nextVertex].second.push_back(nextVertex->getInfo());
+                queue.push(nextVertex);
+            }
+        }
+    }
+
+    if (paths.find(targetVertex) != paths.end()) {
+        const auto& bestPath = paths[targetVertex].second;
+        std::cout << "Best Flight Option (" << paths[targetVertex].first << " stops):" << std::endl;
+        for (const auto& airport : bestPath) {
+            std::cout << "- " << airport.getName() << " (" << airport.getCode() << ")" << std::endl;
+        }
+    } else {
+        std::cout << "No valid flight path found between " << airportCode1 << " and " << airportCode2 << std::endl;
+    }
+}
+
+void FlightManager::bfoairporttocity(string airport, string cityName) {
+    Vertex<Airport> *sourceVertex;
+
+    if (airport.size() > 3) {
+        sourceVertex = findAirportVertexByName(airport);
+    } else if (airport.size() == 3) {
+        sourceVertex = airportsGraph.getGraph().findVertex(Airport(airport, "", "", "", 0.0, 0.0));
+    } else {
+        std::cout << "Invalid source airport code" << std::endl;
+        return;
+    }
+
+    std::queue<Vertex<Airport> *> airportsincity;
+    for (const auto airportVertex: airportsGraph.getGraph().getVertexSet()) {
+        const Airport &airport = airportVertex->getInfo();
+        if (airport.getCity() == cityName) {
+            airportsincity.push(airportVertex);
+        }
+    }
+
+    std::unordered_map<Vertex<Airport> *, std::pair<int, std::vector<Airport>>> paths;
+    std::queue<Vertex<Airport> *> queue;
+
+    queue.push(sourceVertex);
+    paths[sourceVertex] = {0, {sourceVertex->getInfo()}};
+
+    while (!queue.empty()) {
+        Vertex<Airport> *currentVertex = queue.front();
+        queue.pop();
+
+        for (const Edge<Airport> &edge: currentVertex->getAdj()) {
+            Vertex<Airport> *nextVertex = edge.getDest();
+
+            if (paths.find(nextVertex) == paths.end() || paths[nextVertex].first > paths[currentVertex].first + 1) {
+                paths[nextVertex] = {paths[currentVertex].first + 1, paths[currentVertex].second};
+                paths[nextVertex].second.push_back(nextVertex->getInfo());
+                queue.push(nextVertex);
+            }
+        }
+    }
+
+    int minStops = INT_MAX;
+    Vertex<Airport> *bestCityAirport = nullptr;
+    std::queue<Vertex<Airport> *> best;
+
+    while (!airportsincity.empty()){
+        Vertex<Airport>* targetVertex= airportsincity.front();
+        airportsincity.pop();
+        if (paths.find(targetVertex) != paths.end()) {
+            int stops = paths[targetVertex].first;
+            if (stops < minStops) {
+                minStops = stops;
+                best.push(targetVertex);
+            }
+        }
+    }
+
+    if (!best.empty()) {
+        while(!best.empty()){
+            bestCityAirport=best.front();
+            best.pop();
+            const auto &bestPath = paths[bestCityAirport].second;
+            std::cout << "Best Flight Option (" << minStops << " stops):" << std::endl;
+            for (const auto &airport : bestPath) {
+                std::cout << "- " << airport.getName() << " (" << airport.getCode() << ")" << std::endl;
+
+                        }
+        }
+    } else {
+        std::cout << "No valid flight path found between " << airport << " and any airport in " << cityName << std::endl;
+    }
+}
+
+
+
+
+
+
+
+
+

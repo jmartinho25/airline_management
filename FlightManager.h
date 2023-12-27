@@ -48,6 +48,12 @@ public:
                                     std::unordered_set<std::string> &articulationPoints, int &time);
 
     void findEssentialAirports();
+
+    void bfoairporttoairport(string basicString, string basicString1);
+
+    void bfoairporttocity(string basicString, string basicString1);
+
+    Vertex<Airport> *findAirportVertexByName(string airportName);
 };
 
 

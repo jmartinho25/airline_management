@@ -36,6 +36,10 @@ private:
     void identifytopkairport();
 
     void findEssentialAirports();
+
+    void bfoairporttoairport();
+
+    void bfoairporttocity();
 };
 
 

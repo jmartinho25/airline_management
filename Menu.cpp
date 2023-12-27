@@ -10,7 +10,7 @@ void Menu::displayMenu() {
     do {
 
         std::cout << "1. Consult information" << std::endl;
-        std::cout << "2. Management options" << std::endl;
+        std::cout << "2. Present the best flight option" << std::endl;
         std::cout << "3. Process All Requests" << std::endl;
         std::cout << "0. Exit" << std::endl;
 
@@ -78,26 +78,57 @@ void Menu::displayMenu() {
 
 
                 break;
-//            case 2:
-//                std::cout << "1. Join new UC" << std::endl;
-//                std::cout << "2. Request change of class" << std::endl;
-//                std::cout << "0. Exit" << std::endl;
-//                std::cout << "Enter your choice: ";
-//                std::cin >> choice;
-//                switch (choice) {
-//                    case 1:
-//                        joinNewUC();
-//                        break;
-//
-//                    case 2:
-//                        changeClassReq();
-//                        break;
-//                    case 0:
-//                        std::cout << "Exiting the program." << std::endl;
-//                        break;
-//                    default:
-//                        std::cout << "Invalid choice. Please try again." << std::endl;
-//                }
+            case 2:
+                std::cout << "1. From airport to airport" << std::endl;
+                std::cout << "2. From airport to city" << std::endl;
+                std::cout << "3. From airport to geographic coordinates" << std::endl;
+                std::cout << "4. From city to airport" << std::endl;
+                std::cout << "5. From city to city" << std::endl;
+                std::cout << "6. From city to geographic coordinates" << std::endl;
+                std::cout << "7. From geographic coordinates to airport" << std::endl;
+                std::cout << "8. From geographic coordinates to city" << std::endl;
+                std::cout << "9. From geographic coordinates to geographic coordinates" << std::endl;
+                std::cout << "0. Exit" << std::endl;
+                std::cout << "Enter the criteria you want: ";
+                std::cin >> choice;
+                switch (choice) {
+                    case 1:
+                        bfoairporttoairport();
+                        break;
+
+                    case 2:
+                        bfoairporttocity();
+                        break;
+                    case 3:
+
+                        break;
+
+                    case 4:
+
+                        break;
+                    case 5:
+
+                        break;
+
+                    case 6:
+
+                        break;
+                    case 7:
+
+                        break;
+
+                    case 8:
+
+                        break;
+                    case 9:
+
+                        break;
+                    case 0:
+                        std::cout << "Exiting the program." << std::endl;
+                        break;
+                    default:
+                        std::cout << "Invalid choice. Please try again." << std::endl;
+                }
 //            case 3:
 ////                processrequests();
 //                break;
@@ -164,4 +195,40 @@ void Menu::identifytopkairport() {
 void Menu::findEssentialAirports(){
     managementSystem.findEssentialAirports();
 }
+
+void Menu::bfoairporttoairport() {
+
+    std::string airportCode1;
+    std::cout << "Enter the first airport code or name: ";
+    std::cin.ignore();
+    std::getline(std::cin, airportCode1);
+    std::string airportCode2;
+    std::cout << "Enter the second airport code or name: ";
+//    std::cin.ignore();
+    std::getline(std::cin, airportCode2);
+
+
+
+    managementSystem.bfoairporttoairport(airportCode1, airportCode2);
+}
+
+void Menu::bfoairporttocity() {
+    std::string airport;
+    std::cout << "Enter the airport code or name: ";
+    std::cin.ignore();
+    std::getline(std::cin, airport);
+    std::string  cityName;
+    std::cout << "Enter the city name: ";
+//    std::cin.ignore();
+    std::getline(std::cin, cityName);
+
+
+
+
+    managementSystem.bfoairporttocity(airport, cityName);
+}
+
+
+
+
 
