@@ -40,6 +40,8 @@ private:
     void bfoairporttoairport();
 
     void bfoairporttocity();
+
+    void bfocitytoairport();
 };
 
 

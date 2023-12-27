@@ -49,9 +49,11 @@ public:
 
     void findEssentialAirports();
 
-    void bfoairporttoairport(string basicString, string basicString1);
+    void bfoairporttoairport(string airport1, string airport2);
 
-    void bfoairporttocity(string basicString, string basicString1);
+    void bfoairporttocity(string airport, string cityName);
+
+    void bfocitytoairport(string cityname, string airport);
 
     Vertex<Airport> *findAirportVertexByName(string airportName);
 };

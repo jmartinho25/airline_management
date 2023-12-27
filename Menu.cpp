@@ -104,7 +104,7 @@ void Menu::displayMenu() {
                         break;
 
                     case 4:
-
+                        bfocitytoairport();
                         break;
                     case 5:
 
@@ -226,6 +226,22 @@ void Menu::bfoairporttocity() {
 
 
     managementSystem.bfoairporttocity(airport, cityName);
+}
+
+void Menu::bfocitytoairport() {
+    std::string  cityName;
+    std::cout << "Enter the city name: ";
+    std::cin.ignore();
+    std::getline(std::cin, cityName);
+    std::string airport;
+    std::cout << "Enter the airport code or name: ";
+    std::getline(std::cin, airport);
+
+
+
+
+
+    managementSystem.bfocitytoairport(cityName, airport);
 }
 
 

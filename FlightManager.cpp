@@ -533,24 +533,153 @@ void FlightManager::bfoairporttocity(string airport, string cityName) {
             int stops = paths[targetVertex].first;
             if (stops < minStops) {
                 minStops = stops;
+                while(!best.empty()){
+                    best.pop();
+                }
+                best.push(targetVertex);
+            }
+            else if(stops==minStops){
                 best.push(targetVertex);
             }
         }
     }
 
     if (!best.empty()) {
-        while(!best.empty()){
-            bestCityAirport=best.front();
-            best.pop();
-            const auto &bestPath = paths[bestCityAirport].second;
-            std::cout << "Best Flight Option (" << minStops << " stops):" << std::endl;
-            for (const auto &airport : bestPath) {
-                std::cout << "- " << airport.getName() << " (" << airport.getCode() << ")" << std::endl;
+        string a;
+        if(minStops==1){
+            a=" stop";
+        }
+        else{
+            a=" stops";
+        }
+        if (best.size()==1){
+            while(!best.empty()) {
+                bestCityAirport = best.front();
+                best.pop();
 
-                        }
+                const auto &bestPath = paths[bestCityAirport].second;
+                std::cout << "Best Flight Option (" << minStops << a<<"):" << std::endl;
+                for (const auto &airport: bestPath) {
+                    std::cout << "- " << airport.getName() << " (" << airport.getCode() << ")" << std::endl;
+                }
+            }
+        }else if(best.size()>1){
+            std::cout<<"There are "<<best.size()<<" equivalent flight options with "<<minStops<<a<<std::endl;
+            int option =1;
+            while(!best.empty()){
+                bestCityAirport=best.front();
+                best.pop();
+                const auto &bestPath = paths[bestCityAirport].second;
+                std::cout << "Option "<<option<<": "<<std::endl;
+                for (const auto &airport : bestPath) {
+                    std::cout << "- " << airport.getName() << " (" << airport.getCode() << ")" << std::endl;
+                }
+                option++;
+            }
         }
     } else {
         std::cout << "No valid flight path found between " << airport << " and any airport in " << cityName << std::endl;
+    }
+}
+
+
+void FlightManager::bfocitytoairport(string cityName, string airport) {
+    Vertex<Airport> *sourceVertex;
+
+    if (airport.size() > 3) {
+        sourceVertex = findAirportVertexByName(airport);
+    } else if (airport.size() == 3) {
+        sourceVertex = airportsGraph.getGraph().findVertex(Airport(airport, "", "", "", 0.0, 0.0));
+    } else {
+        std::cout << "Invalid target airport code" << std::endl;
+        return;
+    }
+
+    std::queue<Vertex<Airport> *> airportsInCity;
+    for (const auto airportVertex: airportsGraph.getGraph().getVertexSet()) {
+        const Airport &cityAirport = airportVertex->getInfo();
+        if (cityAirport.getCity() == cityName) {
+            airportsInCity.push(airportVertex);
+        }
+    }
+
+    std::unordered_map<Vertex<Airport> *, std::pair<int, std::vector<Airport>>> paths;
+    std::queue<Vertex<Airport> *> queue;
+
+    queue.push(sourceVertex);
+    paths[sourceVertex] = {0, {sourceVertex->getInfo()}};
+
+    while (!queue.empty()) {
+        Vertex<Airport> *currentVertex = queue.front();
+        queue.pop();
+
+        for (const Edge<Airport> &edge: currentVertex->getAdj()) {
+            Vertex<Airport> *nextVertex = edge.getDest();
+
+            if (paths.find(nextVertex) == paths.end() || paths[nextVertex].first > paths[currentVertex].first + 1) {
+                paths[nextVertex] = {paths[currentVertex].first + 1, paths[currentVertex].second};
+                paths[nextVertex].second.push_back(nextVertex->getInfo());
+                queue.push(nextVertex);
+            }
+        }
+    }
+
+    int minStops = INT_MAX;
+    Vertex<Airport> *bestCityAirport = nullptr;
+    std::queue<Vertex<Airport> *> best;
+
+    while (!airportsInCity.empty()) {
+        Vertex<Airport>* targetVertex = airportsInCity.front();
+        airportsInCity.pop();
+
+        if (paths.find(targetVertex) != paths.end()) {
+            int stops = paths[targetVertex].first;
+            if (stops < minStops) {
+                minStops = stops;
+                while (!best.empty()) {
+                    best.pop();
+                }
+                best.push(targetVertex);
+            } else if (stops == minStops) {
+                best.push(targetVertex);
+            }
+        }
+    }
+
+    if (!best.empty()) {
+        string a;
+        if (minStops == 1) {
+            a = " stop";
+        } else {
+            a = " stops";
+        }
+        if (best.size() == 1) {
+            while (!best.empty()) {
+                bestCityAirport = best.front();
+                best.pop();
+
+                const auto &bestPath = paths[bestCityAirport].second;
+                std::cout << "Best Flight Option (" << minStops << a << "):" << std::endl;
+                for (const auto &airport: bestPath) {
+                    std::cout << "- " << airport.getName() << " (" << airport.getCode() << ")" << std::endl;
+                }
+            }
+        } else if (best.size() > 1) {
+            std::cout << "There are " << best.size() << " equivalent flight options with " << minStops << a << std::endl;
+            int option = 1;
+            while (!best.empty()) {
+                bestCityAirport = best.front();
+                best.pop();
+                const auto &bestPath = paths[bestCityAirport].second;
+                std::cout << "Option " << option << ":" << std::endl;
+                for (const auto &airport : bestPath) {
+                    std::cout << "- " << airport.getName() << " (" << airport.getCode() << ")" << std::endl;
+                }
+                option++;
+            }
+        }
+    } else {
+        std::cout << "No valid flight path found between any airport in " << cityName << " and " << airport << std::endl;
     }
 }
 
