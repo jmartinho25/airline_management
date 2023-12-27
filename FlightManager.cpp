@@ -358,9 +358,7 @@ void FlightManager::findEssentialAirports() {
     std::unordered_set<std::string> essentialAirports;
 
     std::unordered_map<std::string, int> disc;
-
     std::unordered_map<std::string, int> low;
-
     std::unordered_map<std::string, std::string> parent;
 
     for (const auto &vertex : airportsGraph.getGraph().getVertexSet()) {
@@ -370,22 +368,25 @@ void FlightManager::findEssentialAirports() {
         }
     }
 
-    if(essentialAirports.size()==0){
-        std::cout<<"No Essential Airports were found"<<std::endl;
-    }
-    else {
-        std::cout<<"There are "<<essentialAirports.size()<<" Essential Airports"<<std::endl;
-        std::cout << "Essential Airports: "<<std::endl;
-        for (const auto &airport: essentialAirports) {
-            std::cout << "- "<<airport << std::endl;
+    if (essentialAirports.size() == 0) {
+        std::cout << "No Essential Airports were found" << std::endl;
+    } else {
+        std::cout << "There are " << essentialAirports.size() << " Essential Airports" << std::endl;
+        std::cout << "Essential Airports: " << std::endl;
+        for (const auto &airportCode : essentialAirports) {
+            const auto &airportVertex = airportsGraph.getGraph().findVertex(Airport(airportCode, "", "", "", 0.0, 0.0));
+            if (airportVertex) {
+                const std::string &airportName = airportVertex->getInfo().getName();
+                std::cout << "- " << airportName << " (" << airportCode << ")" << std::endl;
+            }
         }
     }
 }
 
 void FlightManager::findEssentialAirportsUtil(const std::string &u, std::unordered_map<std::string, int> &disc,
-                                std::unordered_map<std::string, int> &low,
-                                std::unordered_map<std::string, std::string> &parent,
-                                std::unordered_set<std::string> &essentialAirports, int &time) {
+                                              std::unordered_map<std::string, int> &low,
+                                              std::unordered_map<std::string, std::string> &parent,
+                                              std::unordered_set<std::string> &essentialAirports, int &time) {
 
     disc[u] = low[u] = ++time;
     int children = 0;
