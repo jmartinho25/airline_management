@@ -111,10 +111,10 @@ void Menu::displayMenu() {
                         break;
 
                     case 6:
-
+                        bfocitytocoordinates();
                         break;
                     case 7:
-
+                        bfoCoordinatestoAirport();
                         break;
 
                     case 8:
@@ -265,4 +265,38 @@ void Menu::bfocitytocitity() {
     std::getline(std::cin, destCity);
 
     managementSystem.bfocitytocity(sourceCity, destCity);
+}
+
+void Menu::bfocitytocoordinates() {
+    std::string cityName;
+    double lat, lon;
+
+    std::cout << "Enter the city name: ";
+    std::cin.ignore();
+    std::getline(std::cin, cityName);
+
+    std::cout << "Enter the latitude: ";
+    std::cin >> lat;
+
+    std::cout << "Enter the longitude: ";
+    std::cin >> lon;
+
+    managementSystem.bfocitytocoordinates(cityName, lat, lon);
+}
+
+void Menu::bfoCoordinatestoAirport() {
+    double lat, lon;
+    std::string airportCode;
+
+    std::cout << "Enter the latitude: ";
+    std::cin >> lat;
+
+    std::cout << "Enter the longitude: ";
+    std::cin >> lon;
+
+    std::cout << "Enter the airport code or name: ";
+    std::cin.ignore();  // Clear the input buffer
+    std::getline(std::cin, airportCode);
+
+    managementSystem.bfoCoordinatestoAirport(lat, lon, airportCode);
 }

@@ -70,6 +70,10 @@ public:
 
     void bfocitytocity(const string& sourceCity, const string& destCity);
 
+    void bfocitytocoordinates(const string& cityName, double lat, double lon);
+
+    void bfoCoordinatestoAirport(double lat, double lon, const string& airportCode);
+
 
     void dfsVisit(Vertex<Airport> *pVertex, unordered_set<std::string> &airports, unordered_set<std::string> &cities,
                   unordered_set<std::string> &countries);
