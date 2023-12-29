@@ -74,6 +74,8 @@ public:
 
     void bfoCoordinatestoAirport(double lat, double lon, const string& airportCode);
 
+    void bfoCoordinatestoCity(double lat, double lon, const std::string& cityName);
+
 
     void dfsVisit(Vertex<Airport> *pVertex, unordered_set<std::string> &airports, unordered_set<std::string> &cities,
                   unordered_set<std::string> &countries);
