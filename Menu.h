@@ -44,6 +44,8 @@ private:
     void bfocitytoairport();
 
     void bfoairporttocoordinates();
+
+    void bfocitytocitity();
 };
 
 

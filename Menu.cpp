@@ -107,7 +107,7 @@ void Menu::displayMenu() {
                         bfocitytoairport();
                         break;
                     case 5:
-
+                        bfocitytocitity();
                         break;
 
                     case 6:
@@ -254,4 +254,15 @@ void Menu::bfocitytoairport() {
     std::getline(std::cin, airportCode);
 
     managementSystem.bfocitytoairport(cityName, airportCode);
+}
+
+void Menu::bfocitytocitity() {
+    std::string sourceCity, destCity;
+    std::cout << "Enter the source city name: ";
+    std::cin.ignore();
+    std::getline(std::cin, sourceCity);
+    std::cout << "Enter the destination city name: ";
+    std::getline(std::cin, destCity);
+
+    managementSystem.bfocitytocity(sourceCity, destCity);
 }

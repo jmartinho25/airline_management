@@ -565,3 +565,35 @@ std::pair<int, std::vector<Airport>> FlightManager::findBestFlightPath(Vertex<Ai
 
     return {std::numeric_limits<int>::max(), std::vector<Airport>()};
 }
+
+void FlightManager::bfocitytocity(const string& sourceCity, const string& destCity) {
+    auto sourceAirports = findAirportsInCity(sourceCity);
+    auto destAirports = findAirportsInCity(destCity);
+
+    if (sourceAirports.empty() || destAirports.empty()) {
+        std::cout << "Airports not found in one or both cities." << std::endl;
+        return;
+    }
+
+    std::pair<int, std::vector<Airport>> bestPath;
+    int minStops = std::numeric_limits<int>::max();
+
+    for (auto& sourceAirport : sourceAirports) {
+        for (auto& destAirport : destAirports) {
+            auto currentPath = findBestFlightPath(sourceAirport, destAirport);
+            if (currentPath.first < minStops) {
+                minStops = currentPath.first;
+                bestPath = currentPath;
+            }
+        }
+    }
+
+    if (minStops == std::numeric_limits<int>::max()) {
+        std::cout << "No flight path found from " << sourceCity << " to " << destCity << std::endl;
+    } else {
+        std::cout << "Best flight option from " << sourceCity << " to " << destCity << " (" << minStops << " stops):" << std::endl;
+        for (const auto& airport : bestPath.second) {
+            std::cout << "- " << airport.getName() << " (" << airport.getCode() << ")" << std::endl;
+        }
+    }
+}

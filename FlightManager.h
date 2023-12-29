@@ -68,6 +68,8 @@ public:
 
     void bfoairporttocoordinates(const string& airportCode, double lat, double lon);
 
+    void bfocitytocity(const string& sourceCity, const string& destCity);
+
 
     void dfsVisit(Vertex<Airport> *pVertex, unordered_set<std::string> &airports, unordered_set<std::string> &cities,
                   unordered_set<std::string> &countries);
