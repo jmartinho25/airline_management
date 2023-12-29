@@ -21,4 +21,6 @@ add_executable(Project_2
         main.cpp
         FlightManager.cpp
         Menu.h
-        Menu.cpp)
+        Menu.cpp
+        Utils.cpp
+        Utils.h)

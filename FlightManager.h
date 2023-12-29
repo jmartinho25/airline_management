@@ -7,11 +7,14 @@
 
 #include <unordered_map>
 #include "AirportsGraph.h"
+#include "Utils.h"
 
 
 class FlightManager {
 private:
     AirportsGraph airportsGraph;
+
+    Vertex<Airport>* findNearestAirportToCoordinates(double lat, double lon);
 public:
     FlightManager();
 
@@ -57,7 +60,7 @@ public:
 
     Vertex<Airport> *findAirportVertexByName(string airportName);
 
-
+    void bfoairporttocoordinates(const std::string& airportCode, double lat, double lon);
 
 
     void dfsVisit(Vertex<Airport> *pVertex, unordered_set<std::string> &airports, unordered_set<std::string> &cities,

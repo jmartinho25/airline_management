@@ -12,6 +12,7 @@
 #include <stack>
 #include <algorithm>
 #include <climits>
+#include <limits>
 
 FlightManager::FlightManager() {
     ;
@@ -631,13 +632,31 @@ void FlightManager::bfocitytoairport(string cityName, string airport) {
     }
 }
 
+Vertex<Airport>* FlightManager::findNearestAirportToCoordinates(double lat, double lon) {
+    Vertex<Airport>* nearestAirport = nullptr;
+    double minDistance = std::numeric_limits<double>::max();
 
+    for (auto& airportVertex : airportsGraph.getGraph().getVertexSet()) {
+        double distance = haversineDistance(lat, lon,
+                                            airportVertex->getInfo().getLatitude(),
+                                            airportVertex->getInfo().getLongitude());
+        if (distance < minDistance) {
+            minDistance = distance;
+            nearestAirport = airportVertex;
+        }
+    }
 
+    return nearestAirport;
+}
 
+void FlightManager::bfoairporttocoordinates(const std::string& airportCode, double lat, double lon) {
+    Vertex<Airport>* sourceAirport = airportsGraph.getGraph().findVertex(Airport(airportCode, "", "", "", 0.0, 0.0));
+    Vertex<Airport>* targetAirport = findNearestAirportToCoordinates(lat, lon);
 
+    if (!sourceAirport || !targetAirport) {
+        std::cout << "Source airport or nearest airport not found." << std::endl;
+        return;
+    }
 
-
-
-
-
-
+    bfoairporttoairport(sourceAirport->getInfo().getCode(), targetAirport->getInfo().getCode());
+}

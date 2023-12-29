@@ -100,7 +100,7 @@ void Menu::displayMenu() {
                         bfoairporttocity();
                         break;
                     case 3:
-
+                        bfoairporttocoordinates();
                         break;
 
                     case 4:
@@ -244,7 +244,18 @@ void Menu::bfocitytoairport() {
     managementSystem.bfocitytoairport(cityName, airport);
 }
 
+void Menu::bfoairporttocoordinates() {
+    std::string airportCode;
+    double lat, lon;
 
+    std::cout << "Enter the airport code: ";
+    std::cin >> airportCode;
 
+    std::cout << "Enter the latitude: ";
+    std::cin >> lat;
 
+    std::cout << "Enter the longitude: ";
+    std::cin >> lon;
 
+    managementSystem.bfoairporttocoordinates(airportCode, lat, lon);
+}
