@@ -15,6 +15,14 @@ private:
     AirportsGraph airportsGraph;
 
     Vertex<Airport>* findNearestAirportToCoordinates(double lat, double lon);
+
+    vector<Vertex<Airport>*> findAirportsInCity(const std::string& cityName);
+
+    Vertex<Airport>* findAirportVertexByNameOrCode(const std::string& airportIdentifier);
+
+    std::pair<int, std::vector<Airport>> findBestFlightPath(Vertex<Airport>* sourceVertex, Vertex<Airport>* destVertex);
+
+    Vertex<Airport> *findAirportVertexByName(string airportName);
 public:
     FlightManager();
 
@@ -52,15 +60,13 @@ public:
 
     void findEssentialAirports();
 
-    void bfoairporttoairport(string airport1, string airport2);
+    void bfoairporttoairport(const string& airport1,const string& airport2);
 
-    void bfoairporttocity(string airport, string cityName);
+    void bfoairporttocity(const string& airport,const string& cityName);
 
-    void bfocitytoairport(string cityname, string airport);
+    void bfocitytoairport(const string& cityname,const string& airport);
 
-    Vertex<Airport> *findAirportVertexByName(string airportName);
-
-    void bfoairporttocoordinates(const std::string& airportCode, double lat, double lon);
+    void bfoairporttocoordinates(const string& airportCode, double lat, double lon);
 
 
     void dfsVisit(Vertex<Airport> *pVertex, unordered_set<std::string> &airports, unordered_set<std::string> &cities,
