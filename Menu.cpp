@@ -121,7 +121,7 @@ void Menu::displayMenu() {
                         bfoCoordinatestoCity();
                         break;
                     case 9:
-
+                        bfoCoordinatestoCoordinates();
                         break;
                     case 0:
                         std::cout << "Exiting the program." << std::endl;
@@ -316,4 +316,20 @@ void Menu::bfoCoordinatestoCity() {
     std::getline(std::cin, cityName);
 
     managementSystem.bfoCoordinatestoCity(lat, lon, cityName);
+}
+
+
+void Menu::bfoCoordinatestoCoordinates() {
+    double sourceLat, sourceLon, destLat, destLon;
+
+    std::cout << "Enter source latitude: ";
+    std::cin >> sourceLat;
+    std::cout << "Enter source longitude: ";
+    std::cin >> sourceLon;
+    std::cout << "Enter destination latitude: ";
+    std::cin >> destLat;
+    std::cout << "Enter destination longitude: ";
+    std::cin >> destLon;
+
+    managementSystem.bfoCoordinatestoCoordinates(sourceLat, sourceLon, destLat, destLon);
 }

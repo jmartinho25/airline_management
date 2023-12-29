@@ -52,6 +52,8 @@ private:
     void bfoCoordinatestoAirport();
 
     void bfoCoordinatestoCity();
+
+    void bfoCoordinatestoCoordinates();
 };
 
 
