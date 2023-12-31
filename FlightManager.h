@@ -88,6 +88,8 @@ public:
 
     void bfoCoordinatestoCoordinates(double sourceLat, double sourceLon, double destLat, double destLon);
 
+    std::vector<std::vector<Vertex<Airport>*>> shortestPaths(Vertex<Airport>* startAirport,Vertex<Airport>* endAirport);
+
     //FILTERS
     //PREFERRED AIRLINE
     void bfoairporttoairportPAirline(const string& airportCode1, const string& airportCode2, const std::string& airlineCode);

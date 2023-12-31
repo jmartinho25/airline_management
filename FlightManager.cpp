@@ -386,13 +386,19 @@ void FlightManager::bfoairporttoairport(const string& airportCode1, const string
         return;
     }
 
-    auto path= findBestFlightPath(sourceVertex,targetVertex);
+    auto paths= shortestPaths(sourceVertex,targetVertex);
 
-
-    std::cout << "Best Flight Option (" << path.first << " stops):" << std::endl;
-    for (const auto& airport : path.second) {
-        std::cout << "- " << airport.getName() << " (" << airport.getCode() << ")"
-                  << " at coordinates (" << airport.getLatitude() << ", " << airport.getLongitude() << ")" << std::endl;
+    if(paths.empty()){
+        std::cout<<"No Paths found between "<<airportCode1<<"and "<<airportCode2<<std::endl;
+    }else {
+        for (const auto path: paths) {
+            std::cout << "Best Flight Option (" << paths[0].size() << " stops):" << std::endl;
+            for (const auto &airport: path) {
+                std::cout << "- " << airport->getInfo().getName() << " (" << airport->getInfo().getCode() << ")"
+                          << " at coordinates (" << airport->getInfo().getLatitude() << ", " << airport->getInfo().getLongitude() << ")"
+                          << std::endl;
+            }
+        }
     }
 }
 
@@ -599,6 +605,61 @@ std::pair<int, std::vector<Airport>> FlightManager::findBestFlightPath(Vertex<Ai
     }
 
     return {std::numeric_limits<int>::max(), std::vector<Airport>()};
+}
+
+std::vector<std::vector<Vertex<Airport>*>> FlightManager::shortestPaths(Vertex<Airport>* startAirport,Vertex<Airport>* endAirport) {
+    // Priority queue to explore paths in increasing order of length
+    std::priority_queue<std::pair<int, std::vector<Vertex<Airport>*>>, std::vector<std::pair<int, std::vector<Vertex<Airport>*>>>, std::greater<>> pq;
+
+    // Map to store the shortest distances to each airport
+    std::unordered_map<Vertex<Airport>*, int> distance;
+
+    // Initialize the distance map
+    distance[startAirport] = 0;
+
+    // Push the start airport onto the priority queue
+    pq.push({0, {startAirport}});
+
+    // Set to store unique paths
+    std::set<std::vector<Vertex<Airport>*>> uniquePaths;
+
+    while (!pq.empty()) {
+        auto current = pq.top();
+        pq.pop();
+
+        int currentDistance = current.first;
+        auto currentPath = current.second;
+        auto currentNode = currentPath.back();
+
+        // If we reached the end airport, add the path to the set of unique paths
+        if (currentNode == endAirport) {
+            uniquePaths.insert(currentPath);
+        }
+
+
+        // Explore neighboring airports
+        for (const auto& flight : currentNode->getAdj()) {
+            auto neighbor = flight.getDest();
+
+            int newDistance = currentDistance + 1;  // Assuming all flights have the same weight
+
+            // If the new path is shorter or the distance hasn't been calculated yet
+            if (distance.find(neighbor) == distance.end() || newDistance < distance[neighbor]) {
+                distance[neighbor] = newDistance;
+                std::vector<Vertex<Airport>*> newPath = currentPath;
+                newPath.push_back(neighbor);
+                pq.push({newDistance, newPath});
+            } else if (newDistance == distance[neighbor]) {
+                // If the new path has the same distance as the known shortest path
+                std::vector<Vertex<Airport>*> newPath = currentPath;
+                newPath.push_back(neighbor);
+                pq.push({newDistance, newPath});
+            }
+        }
+    }
+
+    // Convert the set of unique paths to a vector and return
+    return std::vector<std::vector<Vertex<Airport>*>>(uniquePaths.begin(), uniquePaths.end());
 }
 
 void FlightManager::bfocitytocity(const string& sourceCity, const string& destCity) {
