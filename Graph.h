@@ -97,9 +97,7 @@ public:
 
     friend class Vertex<T>;
 
-    const string &getAirlineCode() {
-        return airlineCode;
-    }
+    std::string getAirlineCode() const;
 };
 
 template<class T>
@@ -193,6 +191,12 @@ template<class T>
 double Edge<T>::getWeight() const {
     return weight;
 }
+
+template<class T>
+std::string Edge<T>::getAirlineCode() const {
+    return airlineCode;
+}
+
 
 template<class T>
 void Edge<T>::setWeight(double weight) {

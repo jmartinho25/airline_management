@@ -23,6 +23,11 @@ private:
     std::pair<int, std::vector<Airport>> findBestFlightPath(Vertex<Airport>* sourceVertex, Vertex<Airport>* destVertex);
 
     Vertex<Airport> *findAirportVertexByName(string airportName);
+
+    std::pair<int, std::vector<Airport>> findBestFlightPathPAirline(
+            Vertex<Airport>* sourceVertex, Vertex<Airport>* destVertex, const std::string& airlineCode);
+
+
 public:
     FlightManager();
 
@@ -60,6 +65,11 @@ public:
 
     void findEssentialAirports();
 
+    void dfsVisit(Vertex<Airport> *pVertex, unordered_set<std::string> &airports, unordered_set<std::string> &cities,
+                  unordered_set<std::string> &countries);
+
+    //Find Best Path Functions
+
     void bfoairporttoairport(const string& airport1,const string& airport2);
 
     void bfoairporttocity(const string& airport,const string& cityName);
@@ -78,9 +88,25 @@ public:
 
     void bfoCoordinatestoCoordinates(double sourceLat, double sourceLon, double destLat, double destLon);
 
+    //FILTERS
+    //PREFERRED AIRLINE
+    void bfoairporttoairportPAirline(const string& airportCode1, const string& airportCode2, const std::string& airlineCode);
 
-    void dfsVisit(Vertex<Airport> *pVertex, unordered_set<std::string> &airports, unordered_set<std::string> &cities,
-                  unordered_set<std::string> &countries);
+    void bfoairporttocityPAirline(const string& airport, const string& cityName, const std::string& airlineCode);
+
+    void bfoairporttocoordinatesPAirline(const string& airportCode, double lat, double lon, const std::string& airlineCode);
+
+    void bfocitytoairportPAirline(const string& cityname,const string& airport, const std::string& airlineCode);
+
+    void bfocitytocityPAirline(const string& sourceCity, const string& destCity, const std::string& airlineCode);
+
+    void bfocitytocoordenatesPAirline(const string& sourceCity, double lat, double lon, const std::string& airlineCode);
+
+    void bfoCoordinatestoAirportPAirline(double lat, double lon, const string& airportCode,const std::string& airlineCode );
+
+    void bfoCoordinatestoCityPAirline(double lat, double lon, const std::string& cityName, const std::string& airlineCode);
+
+    void bfoCoordinatestoCoordinatesPAirline(double sourceLat, double sourceLon, double destLat, double destLon, const std::string& airlineCode);
 };
 
 

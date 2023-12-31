@@ -37,6 +37,8 @@ private:
 
     void findEssentialAirports();
 
+    //FIND BEST PATH FUNCTIONS
+
     void bfoairporttoairport();
 
     void bfoairporttocity();
@@ -54,6 +56,32 @@ private:
     void bfoCoordinatestoCity();
 
     void bfoCoordinatestoCoordinates();
+
+    //FILTERS
+
+    void handleBestFlightOptionWithFilters();
+
+    void handlePreferredAirlineFilter();
+
+    //PREFERRED AIRLINE
+
+    void bfoairporttoairportPAirline(std::string& airline);
+
+    void bfoairporttocityPAirline(std::string& airlineCode);
+
+    void bfoairporttocoordinatesPAirline(std::string& airlineCode);
+
+    void bfocitytoairportPAirline(std::string& airlineCode);
+
+    void bfocitytocityPAirline(std::string& airlineCode);
+
+    void bfocitytocoordinatesPAirline(std::string& airlineCode);
+
+    void bfoCoordinatestoAirportPAirline(std::string& airlineCode);
+
+    void bfoCoordinatestoCityPAirline(std::string& airlineCode);
+
+    void bfoCoordinatestoCoordinatesPAirline(std::string& airlineCode);
 };
 
 
