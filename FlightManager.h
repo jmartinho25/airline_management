@@ -14,7 +14,7 @@ class FlightManager {
 private:
     AirportsGraph airportsGraph;
 
-    Vertex<Airport>* findNearestAirportToCoordinates(double lat, double lon);
+    std::vector<Vertex<Airport>*> findNearestAirportToCoordinates(double lat, double lon);
 
     vector<Vertex<Airport>*> findAirportsInCity(const std::string& cityName);
 
