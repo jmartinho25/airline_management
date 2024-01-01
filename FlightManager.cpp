@@ -304,63 +304,49 @@ void FlightManager::identifytopkairport() {
 }
 
 void FlightManager::findEssentialAirports() {
-    int time = 0;
-    std::unordered_set<std::string> essentialAirports;
 
-    std::unordered_map<std::string, int> disc;
-    std::unordered_map<std::string, int> low;
-    std::unordered_map<std::string, std::string> parent;
-
-    for (const auto &vertex : airportsGraph.getGraph().getVertexSet()) {
-        const std::string &v = vertex->getInfo().getCode();
-        if (disc.find(v) == disc.end()) {
-            FlightManager::findEssentialAirportsUtil(v, disc, low, parent, essentialAirports, time);
-        }
-    }
-
-    if (essentialAirports.size() == 0) {
-        std::cout << "No Essential Airports were found" << std::endl;
-    } else {
-        std::cout << "There are " << essentialAirports.size() << " Essential Airports" << std::endl;
-        std::cout << "Essential Airports: " << std::endl;
-        for (const auto &airportCode : essentialAirports) {
-            const auto &airportVertex = airportsGraph.getGraph().findVertex(Airport(airportCode, "", "", "", 0.0, 0.0));
-            if (airportVertex) {
-                const std::string &airportName = airportVertex->getInfo().getName();
-                std::cout << "- " << airportName << " (" << airportCode << ")" << std::endl;
+    unsigned int index = 1;
+    unordered_set<string> essentialAirports;
+    queue<pair<Vertex<Airport> *, Vertex<Airport> *>> addedEdges;
+    for (Vertex<Airport> *vertex: airportsGraph.getGraph().getVertexSet()) {
+        vertex->setVisited(false);
+        vertex->setProcessing(false);
+        for(Edge<Airport> edge: vertex->getAdj()){
+            Vertex<Airport>* w = edge.getDest();
+            Vertex<Airport> *sourceVertex = airportsGraph.getGraph().findVertex(Airport(w->getInfo().getCode(), "", "", "", 0.0, 0.0));
+            if(airportsGraph.addFlight(w->getInfo().getCode(),vertex->getInfo().getCode(),edge.getAirlineCode())){
+                addedEdges.emplace(w,vertex);
             }
         }
     }
-}
-
-void FlightManager::findEssentialAirportsUtil(const std::string &u, std::unordered_map<std::string, int> &disc,
-                                              std::unordered_map<std::string, int> &low,
-                                              std::unordered_map<std::string, std::string> &parent,
-                                              std::unordered_set<std::string> &essentialAirports, int &time) {
-
-    disc[u] = low[u] = ++time;
-    int children = 0;
-
-    for (const Edge<Airport> &edge : airportsGraph.getGraph().findVertex(Airport(u, "", "", "", 0.0, 0.0))->getAdj()) {
-        const std::string &v = edge.getDest()->getInfo().getCode();
-
-        if (disc.find(v) == disc.end()) {
-            children++;
-            parent[v] = u;
-
-            findEssentialAirportsUtil(v, disc, low, parent, essentialAirports, time);
-
-            low[u] = std::min(low[u], low[v]);
-
-            if ((parent.find(u) == parent.end() && children > 1) ||
-                (parent.find(u) != parent.end() && low[v] >= disc[u])) {
-                essentialAirports.insert(u);
-            }
-        } else if (v != parent[u]) {
-            low[u] = std::min(low[u], disc[v]);
-        }
+    for(Vertex<Airport>*v: airportsGraph.getGraph().getVertexSet()) {
+    if(!v->isVisited()){
+        dfs_artic(v,essentialAirports,index);
     }
+    }
+
+        if (essentialAirports.size() == 0) {
+            std::cout << "No Essential Airports were found" << std::endl;
+        } else {
+            std::cout << "There are " << essentialAirports.size() << " Essential Airports" << std::endl;
+            std::cout << "Essential Airports: " << std::endl;
+            for (const auto &airportCode: essentialAirports) {
+                const auto &airportVertex = airportsGraph.getGraph().findVertex(
+                        Airport(airportCode, "", "", "", 0.0, 0.0));
+                if (airportVertex) {
+                    const std::string &airportName = airportVertex->getInfo().getName();
+                    std::cout << "- " << airportName << " (" << airportCode << ")" << std::endl;
+                }
+            }
+        }
+
 }
+
+
+
+
+
+
 Vertex<Airport>* FlightManager::findAirportVertexByName(string airportName) {
 for (const auto &vertex : airportsGraph.getGraph().getVertexSet()) {
     const Airport &airport = vertex->getInfo();
@@ -1383,4 +1369,28 @@ void FlightManager::bfoCoordinatestoCoordinatesPAirline(double sourceLat, double
         }
     }
 
+}
+
+void FlightManager::dfs_artic(Vertex<Airport> *v, unordered_set<string>& essentialAirports, unsigned int index) const {
+    int children = 0;
+    v->setNum(index);
+    v->setLow(index);
+    index++;
+    v->setProcessing(true);
+    v->setVisited(true);
+
+    for (const Edge<Airport>& e : v->getAdj()) {
+        Vertex<Airport>* w = e.getDest();
+        if (!w->isVisited()) {
+            children++;
+            dfs_artic(w, essentialAirports, index);
+            if (v->getLow() > w->getLow()) v->setLow(w->getLow());
+            if (w->getLow() >= v->getNum() and v->getNum() != 1) essentialAirports.insert(v->getInfo().getCode());
+            if (v->getNum() == 1 and children > 1) essentialAirports.insert(v->getInfo().getCode());
+        } else if (w->isProcessing()) {
+            if (v->getLow() > w->getNum()) v->setLow(w->getNum());
+        }
+    }
+
+    v->setProcessing(false);
 }

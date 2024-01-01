@@ -17,7 +17,7 @@ AirportsGraph::addFlight(const std::string &sourceCode, const std::string &targe
     targetVertex->increaseInDegree();
     if (sourceVertex && targetVertex) {
         return airportsGraph.addEdge(sourceVertex->getInfo(), targetVertex->getInfo(), 0.0,
-                                     airline);  // Weight can be added if needed
+                                     airline);
     }
 
     return false;

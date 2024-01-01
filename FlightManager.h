@@ -111,6 +111,8 @@ public:
     void bfoCoordinatestoCityPAirline(double lat, double lon, const std::string& cityName, const std::string& airlineCode);
 
     void bfoCoordinatestoCoordinatesPAirline(double sourceLat, double sourceLon, double destLat, double destLon, const std::string& airlineCode);
+
+    void dfs_artic(Vertex<Airport> *v, unordered_set<string> &essentialAirports, unsigned int index) const;
 };
 
 
