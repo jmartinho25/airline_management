@@ -567,7 +567,7 @@ Vertex<Airport>* FlightManager::findAirportVertexByNameOrCode(const std::string&
     return nullptr;
 }
 
-std::pair<int, std::vector<Airport>> FlightManager::findBestFlightPath(Vertex<Airport>* sourceVertex, Vertex<Airport>* destVertex) {
+/*std::pair<int, std::vector<Airport>> FlightManager::findBestFlightPath(Vertex<Airport>* sourceVertex, Vertex<Airport>* destVertex) {
     std::unordered_map<Vertex<Airport>*, std::pair<int, std::vector<Airport>>> paths;
     std::queue<Vertex<Airport>*> queue;
 
@@ -593,7 +593,7 @@ std::pair<int, std::vector<Airport>> FlightManager::findBestFlightPath(Vertex<Ai
     }
 
     return {std::numeric_limits<int>::max(), std::vector<Airport>()};
-}
+}*/
 
 std::vector<std::vector<Vertex<Airport>*>> FlightManager::shortestPaths(Vertex<Airport>* startAirport,Vertex<Airport>* endAirport) {
     // Priority queue to explore paths in increasing order of length
@@ -929,6 +929,64 @@ std::pair<int, std::vector<Airport>> FlightManager::findBestFlightPathPAirline(
     return {std::numeric_limits<int>::max(), std::vector<Airport>()};
 }
 
+std::vector<std::vector<Vertex<Airport>*>> FlightManager::shortestPathsPAirline(
+        Vertex<Airport>* startAirport, Vertex<Airport>* endAirport, const std::string& airlineCode) {
+
+    // Priority queue to explore paths in increasing order of length
+    std::priority_queue<std::pair<int, std::vector<Vertex<Airport>*>>, std::vector<std::pair<int, std::vector<Vertex<Airport>*>>>, std::greater<>> pq;
+
+    // Map to store the shortest distances to each airport
+    std::unordered_map<Vertex<Airport>*, int> distance;
+
+    // Initialize the distance map
+    distance[startAirport] = 0;
+
+    // Push the start airport onto the priority queue
+    pq.push({0, {startAirport}});
+
+    // Set to store unique paths
+    std::set<std::vector<Vertex<Airport>*>> uniquePaths;
+
+    while (!pq.empty()) {
+        auto current = pq.top();
+        pq.pop();
+
+        int currentDistance = current.first;
+        auto currentPath = current.second;
+        auto currentNode = currentPath.back();
+
+        // If we reached the end airport, add the path to the set of unique paths
+        if (currentNode == endAirport) {
+            uniquePaths.insert(currentPath);
+        }
+
+
+        // Explore neighboring airports
+        for (const auto& flight : currentNode->getAdj()) {
+            auto neighbor = flight.getDest();
+
+            int newDistance = currentDistance + 1;  // Assuming all flights have the same weight
+
+            // If the new path is shorter or the distance hasn't been calculated yet
+            if (flight.getAirlineCode()==airlineCode&&(distance.find(neighbor) == distance.end() || newDistance < distance[neighbor])) {
+                distance[neighbor] = newDistance;
+                std::vector<Vertex<Airport>*> newPath = currentPath;
+                newPath.push_back(neighbor);
+                pq.push({newDistance, newPath});
+            } else if (flight.getAirlineCode()==airlineCode&&newDistance == distance[neighbor]) {
+                // If the new path has the same distance as the known shortest path
+                std::vector<Vertex<Airport>*> newPath = currentPath;
+                newPath.push_back(neighbor);
+                pq.push({newDistance, newPath});
+            }
+        }
+    }
+
+    // Convert the set of unique paths to a vector and return
+    return std::vector<std::vector<Vertex<Airport>*>>(uniquePaths.begin(), uniquePaths.end());
+}
+
+
 
 void FlightManager::bfoairporttoairportPAirline(const string& airportCode1, const string& airportCode2, const std::string& airlineCode) {
     auto sourceVertex = findAirportVertexByNameOrCode(airportCode1);
@@ -944,18 +1002,20 @@ void FlightManager::bfoairporttoairportPAirline(const string& airportCode1, cons
         return;
     }
 
-    auto path= findBestFlightPathPAirline(sourceVertex,targetVertex,airlineCode);
+    auto paths= shortestPathsPAirline(sourceVertex,targetVertex,airlineCode);
 
-    if (path.first==std::numeric_limits<int>::max()){
+    if (paths.empty()){
         std::cout << "No flight path found from " << airportCode1 << " to " << airportCode2 << " using exclusively airline '"<<airlineCode<<"'" << std::endl;
     }
     else {
-
-        std::cout << "Best Flight Option using exclusively airline '"<<airlineCode<<"' (" << path.first << " stops):" << std::endl;
-        for (const auto &airport: path.second) {
-            std::cout << "- " << airport.getName() << " (" << airport.getCode() << ")"
-                      << " at coordinates (" << airport.getLatitude() << ", " << airport.getLongitude() << ")"
-                      << std::endl;
+        for (const auto path: paths) {
+            std::cout << "Best Flight Option using exclusively airline '" << airlineCode << "' (" << paths[0].size()
+                      << " stops):" << std::endl;
+            for (const auto &airport: path) {
+                std::cout << "- " << airport->getInfo().getName() << " (" << airport->getInfo().getCode() << ")"
+                          << " at coordinates (" << airport->getInfo().getLatitude() << ", " << airport->getInfo().getLongitude() << ")"
+                          << std::endl;
+            }
         }
     }
 }
@@ -973,33 +1033,29 @@ void FlightManager::bfoairporttocityPAirline(const string& airport, const string
         return;
     }
 
-    std::queue<std::pair<int, std::vector<Airport>>> bestPath;
-    int minStops = std::numeric_limits<int>::max();
+    std::vector<std::vector<Vertex<Airport>*>> bestPaths;
     for (auto& cityAirport : cityAirports) {
-        auto currentPath = findBestFlightPathPAirline(sourceAirport, cityAirport, airlineCode);
-        if (currentPath.first < minStops) {
-            minStops = currentPath.first;
-            while(!bestPath.empty()) {
-                bestPath.pop();
-            }
-            bestPath.push(currentPath);
+        auto paths = shortestPathsPAirline(sourceAirport, cityAirport, airlineCode);
+        if(paths.empty()){
+            continue;
         }
-        else if(currentPath.first==minStops){
-            bestPath.push(currentPath);
+        if (bestPaths.empty()||paths[0].size() < bestPaths[0].size()) {
+            bestPaths=paths;
+        }
+        else if(paths[0].size()==bestPaths[0].size()){
+            bestPaths.insert(bestPaths.end(),paths.begin(),paths.end());
         }
     }
 
-    if (minStops == std::numeric_limits<int>::max()) {
+    if (bestPaths.empty()) {
         std::cout << "No flight path found from " << airport << " to " << cityName <<" using exclusively airline '"<<airlineCode<<"'"<< std::endl;
     } else {
-        while (!bestPath.empty()) {
-            auto best =bestPath.front();
-            bestPath.pop();
-            std::cout << "Best flight option from " << airport << " to " << cityName << " using exclusively airline '"<<airlineCode<<"' (" << minStops << " stops):"
+        for (const auto path:bestPaths){
+            std::cout << "Best flight option from " << airport << " to " << cityName << " using exclusively airline '"<<airlineCode<<"' (" << bestPaths[0].size() << " stops):"
                       << std::endl;
-            for (const auto &airport: best.second) {
-                std::cout << "- " << airport.getName() << " (" << airport.getCode() << ")"
-                          << " at coordinates (" << airport.getLatitude() << ", " << airport.getLongitude() << ")"
+            for (const auto &airport: path) {
+                std::cout << "- " << airport->getInfo().getName() << " (" << airport->getInfo().getCode() << ")"
+                          << " at coordinates (" << airport->getInfo().getLatitude() << ", " << airport->getInfo().getLongitude() << ")"
                           << std::endl;
             }
         }
@@ -1017,32 +1073,28 @@ void FlightManager::bfoairporttocoordinatesPAirline(const std::string &airportCo
         return;
     }
 
-    std::queue<std::pair<int, std::vector<Airport>>> bestPath;
-    int minStops = std::numeric_limits<int>::max();
+    std::vector<std::vector<Vertex<Airport>*>> bestPaths;
     for (auto& destAirport : targetAirports) {
-        auto currentPath = findBestFlightPathPAirline(sourceAirport, destAirport, airlineCode);
-        if (currentPath.first < minStops) {
-            minStops = currentPath.first;
-            while(!bestPath.empty()) {
-                bestPath.pop();
-            }
-            bestPath.push(currentPath);
+        auto paths = shortestPathsPAirline(sourceAirport, destAirport, airlineCode);
+        if(paths.empty()){
+            continue;
         }
-        else if(currentPath.first==minStops){
-            bestPath.push(currentPath);
+        if (bestPaths.empty()||paths[0].size() < bestPaths[0].size()) {
+            bestPaths=paths;
+        }
+        else if(paths[0].size()==bestPaths[0].size()){
+            bestPaths.insert(bestPaths.end(),paths.begin(),paths.end());
         }
     }
 
-    if (minStops == std::numeric_limits<int>::max()) {
+    if (bestPaths.empty()) {
         std::cout << "No flight path found from " << airportCode << " to coordinates (" << lat << ", " << lon << ")"<<" using exclusively airline '"<<airlineCode<<"'" << std::endl;
     } else {
-        while (!bestPath.empty()) {
-            auto best =bestPath.front();
-            bestPath.pop();
-            std::cout << "Best flight option from " << airportCode << " to coordinates (" << lat << ", " << lon << ") using exclusively airline '"<<airlineCode<<"' (" << minStops << " stops):" << std::endl;
-            for (const auto &airport: best.second) {
-                std::cout << "- " << airport.getName() << " (" << airport.getCode() << ")"
-                          << " at coordinates (" << airport.getLatitude() << ", " << airport.getLongitude() << ")"
+        for (const auto path:bestPaths){
+            std::cout << "Best flight option from " << airportCode << " to coordinates (" << lat << ", " << lon << ") using exclusively airline '"<<airlineCode<<"' (" << bestPaths[0].size() << " stops):" << std::endl;
+            for (const auto &airport: path) {
+                std::cout << "- " << airport->getInfo().getName() << " (" << airport->getInfo().getCode() << ")"
+                          << " at coordinates (" << airport->getInfo().getLatitude() << ", " << airport->getInfo().getLongitude() << ")"
                           << std::endl;
             }
         }
@@ -1065,33 +1117,28 @@ void FlightManager::bfocitytoairportPAirline(const std::string &cityName, const 
         return;
     }
 
-    std::queue<std::pair<int, std::vector<Airport>>> bestPath;
-    int minStops = std::numeric_limits<int>::max();
+    std::vector<std::vector<Vertex<Airport>*>> bestPaths;
     for (auto& cityAirport : cityAirports) {
-        auto currentPath = findBestFlightPathPAirline(cityAirport, destAirport, airlineCode);
-        if (currentPath.first < minStops) {
-            minStops = currentPath.first;
-            while(!bestPath.empty()) {
-                bestPath.pop();
-            }
-            bestPath.push(currentPath);
+        auto paths = shortestPathsPAirline(cityAirport, destAirport, airlineCode);
+        if(paths.empty()){
+            continue;
         }
-        else if(currentPath.first==minStops){
-            bestPath.push(currentPath);
+        if (bestPaths.empty()||paths[0].size() < bestPaths[0].size()) {
+            bestPaths=paths;
+        }
+        else if(paths[0].size()==bestPaths[0].size()){
+            bestPaths.insert(bestPaths.end(),paths.begin(),paths.end());
         }
     }
 
-    if (minStops == std::numeric_limits<int>::max()) {
+    if (bestPaths.empty()) {
         std::cout << "No flight path found from " << cityName << " to " << airportCode <<"using exclusively airline '"<<airlineCode<<"'"<< std::endl;
     } else {
-
-        while (!bestPath.empty()) {
-            auto best =bestPath.front();
-            bestPath.pop();
-            std::cout << "Best flight option from " << cityName << " to " << airportCode << " (" << minStops << " stops) using exclusively airline '"<<airlineCode<<"':" << std::endl;
-            for (const auto &airport: best.second) {
-                std::cout << "- " << airport.getName() << " (" << airport.getCode() << ")"
-                          << " at coordinates (" << airport.getLatitude() << ", " << airport.getLongitude() << ")"
+        for (const auto path:bestPaths){
+            std::cout << "Best flight option from " << cityName << " to " << airportCode << " (" << bestPaths[0].size() << " stops) using exclusively airline '"<<airlineCode<<"':" << std::endl;
+            for (const auto &airport: path) {
+                std::cout << "- " << airport->getInfo().getName() << " (" << airport->getInfo().getCode() << ")"
+                          << " at coordinates (" << airport->getInfo().getLatitude() << ", " << airport->getInfo().getLongitude() << ")"
                           << std::endl;
             }
         }
@@ -1108,36 +1155,32 @@ void FlightManager::bfocitytocityPAirline(const std::string &sourceCity, const s
         return;
     }
 
-    std::queue<std::pair<int, std::vector<Airport>>> bestPath;
-    int minStops = std::numeric_limits<int>::max();
+    std::vector<std::vector<Vertex<Airport>*>> bestPaths;
 
     for (auto& sourceAirport : sourceAirports) {
         for (auto& destAirport : destAirports) {
-            auto currentPath = findBestFlightPathPAirline(sourceAirport, destAirport, airlineCode);
-            if (currentPath.first < minStops) {
-                minStops = currentPath.first;
-                while(!bestPath.empty()) {
-                    bestPath.pop();
-                }
-                bestPath.push(currentPath);
+            auto paths = shortestPathsPAirline(sourceAirport, destAirport, airlineCode);
+            if(paths.empty()){
+                continue;
             }
-            else if(currentPath.first==minStops){
-                bestPath.push(currentPath);
+            if (bestPaths.empty()||paths[0].size() < bestPaths[0].size()) {
+                bestPaths=paths;
+            }
+            else if(paths[0].size()==bestPaths[0].size()){
+                bestPaths.insert(bestPaths.end(),paths.begin(),paths.end());
             }
         }
     }
 
-    if (minStops == std::numeric_limits<int>::max()) {
+    if (bestPaths.empty()) {
         std::cout << "No flight path found from " << sourceCity << " to " << destCity << " using exclusively airline '"<<airlineCode<<"'"<< std::endl;
     } else {
-        while (!bestPath.empty()) {
-            auto best =bestPath.front();
-            bestPath.pop();
-            std::cout << "Best flight option from " << sourceCity << " to " << destCity << " using exclusively airline '"<<airlineCode<<"' (" << minStops << " stops):"
+        for (const auto path:bestPaths){
+            std::cout << "Best flight option from " << sourceCity << " to " << destCity << " using exclusively airline '"<<airlineCode<<"' (" << bestPaths[0].size() << " stops):"
                       << std::endl;
-            for (const auto &airport: best.second) {
-                std::cout << "- " << airport.getName() << " (" << airport.getCode() << ")"
-                          << " at coordinates (" << airport.getLatitude() << ", " << airport.getLongitude() << ")"
+            for (const auto &airport: path) {
+                std::cout << "- " << airport->getInfo().getName() << " (" << airport->getInfo().getCode() << ")"
+                          << " at coordinates (" << airport->getInfo().getLatitude() << ", " << airport->getInfo().getLongitude() << ")"
                           << std::endl;
             }
         }
@@ -1158,34 +1201,31 @@ void FlightManager::bfocitytocoordenatesPAirline(const std::string &cityName, do
         return;
     }
 
-    std::queue<std::pair<int, std::vector<Airport>>> bestPath;
-    int minStops = std::numeric_limits<int>::max();
+    std::vector<std::vector<Vertex<Airport>*>> bestPaths;
 
     for (auto& cityAirport : cityAirports) {
         for (auto& destAirport:nearestAirports) {
-            auto currentPath = findBestFlightPathPAirline(cityAirport, destAirport, airlineCode);
-            if (currentPath.first < minStops) {
-                minStops = currentPath.first;
-                while (!bestPath.empty()) {
-                    bestPath.pop();
-                }
-                bestPath.push(currentPath);
-            } else if (currentPath.first == minStops) {
-                bestPath.push(currentPath);
+            auto paths = shortestPathsPAirline(cityAirport, destAirport, airlineCode);
+            if(paths.empty()){
+                continue;
+            }
+            if (bestPaths.empty()||paths[0].size() < bestPaths[0].size()) {
+                bestPaths=paths;
+            }
+            else if(paths[0].size()==bestPaths[0].size()){
+                bestPaths.insert(bestPaths.end(),paths.begin(),paths.end());
             }
         }
     }
 
-    if (minStops == std::numeric_limits<int>::max()) {
+    if (bestPaths.empty()) {
         std::cout << "No flight path found from " << cityName << " to coordinates (" << lat << ", " << lon << ") using exclusively airline '"<<airlineCode<<"'" << std::endl;
     } else {
-while (!bestPath.empty()) {
-            auto best =bestPath.front();
-            bestPath.pop();
-            std::cout << "Best flight option from " << cityName << " to coordinates (" << lat << ", " << lon << ") using exclusively airline '"<<airlineCode<<"' (" << minStops << " stops):"<< std::endl;
-            for (const auto &airport: best.second) {
-                std::cout << "- " << airport.getName() << " (" << airport.getCode() << ")"
-                          << " at coordinates (" << airport.getLatitude() << ", " << airport.getLongitude() << ")"
+        for (const auto path:bestPaths) {
+            std::cout << "Best flight option from " << cityName << " to coordinates (" << lat << ", " << lon << ") using exclusively airline '"<<airlineCode<<"' (" << bestPaths[0].size() << " stops):"<< std::endl;
+            for (const auto &airport: path) {
+                std::cout << "- " << airport->getInfo().getName() << " (" << airport->getInfo().getCode() << ")"
+                          << " at coordinates (" << airport->getInfo().getLatitude() << ", " << airport->getInfo().getLongitude() << ")"
                           << std::endl;
             }
         }
@@ -1213,32 +1253,28 @@ void FlightManager::bfoCoordinatestoAirportPAirline(double lat, double lon, cons
         }
     }
 
-    std::queue<std::pair<int, std::vector<Airport>>> bestPath;
-    int minStops = std::numeric_limits<int>::max();
+    std::vector<std::vector<Vertex<Airport>*>> bestPaths;
     for (auto& nearestAirport : nearestAirports) {
-        auto currentPath = findBestFlightPathPAirline(nearestAirport, destAirport, airlineCode);
-        if (currentPath.first < minStops) {
-            minStops = currentPath.first;
-            while(!bestPath.empty()) {
-                bestPath.pop();
-            }
-            bestPath.push(currentPath);
+        auto paths = shortestPathsPAirline(nearestAirport, destAirport, airlineCode);
+        if(paths.empty()){
+            continue;
         }
-        else if(currentPath.first==minStops){
-            bestPath.push(currentPath);
+        if (bestPaths.empty()||paths[0].size() < bestPaths[0].size()) {
+            bestPaths=paths;
+        }
+        else if(paths[0].size()==bestPaths[0].size()){
+            bestPaths.insert(bestPaths.end(),paths.begin(),paths.end());
         }
     }
 
-    if (minStops == std::numeric_limits<int>::max()) {
+    if (bestPaths.empty()) {
         std::cout << "No flight path found from the nearest airport to " << airportCode << "using exclusively airline '"<<airlineCode<<"'" << std::endl;
     } else {
-        while (!bestPath.empty()) {
-            auto best =bestPath.front();
-            bestPath.pop();
-            std::cout << "Best flight option from coordinates("<<lat<<","<<lon<<") to " << airportCode << " using exclusively airline '"<<airlineCode<< "' (" << minStops << " stops):" << std::endl;
-            for (const auto &airport: best.second) {
-                std::cout << "- " << airport.getName() << " (" << airport.getCode() << ")"
-                          << " at coordinates (" << airport.getLatitude() << ", " << airport.getLongitude() << ")"
+        for (const auto path:bestPaths) {
+            std::cout << "Best flight option from coordinates("<<lat<<","<<lon<<") to " << airportCode << " using exclusively airline '"<<airlineCode<< "' (" << bestPaths[0].size() << " stops):" << std::endl;
+            for (const auto &airport: path) {
+                std::cout << "- " << airport->getInfo().getName() << " (" << airport->getInfo().getCode() << ")"
+                          << " at coordinates (" << airport->getInfo().getLatitude() << ", " << airport->getInfo().getLongitude() << ")"
                           << std::endl;
             }
         }
@@ -1258,35 +1294,32 @@ void FlightManager::bfoCoordinatestoCityPAirline(double lat, double lon, const s
         return;
     }
 
-    std::queue<std::pair<int, std::vector<Airport>>> overallBestPath ;
-    int minStops = std::numeric_limits<int>::max();
+    std::vector<std::vector<Vertex<Airport>*>> bestPaths;
 
     for (auto& nearestAirport:nearestAirports){
         for (auto& cityAirport : cityAirports) {
-            auto bestPath = findBestFlightPathPAirline(nearestAirport, cityAirport, airlineCode);
-            if (bestPath.first < minStops) {
-                minStops = bestPath.first;
-                while(!overallBestPath.empty()) {
-                    overallBestPath.pop();
-                }
-                overallBestPath.push(bestPath);
-            }else if(bestPath.first==minStops) {
-                overallBestPath.push(bestPath);
+            auto paths = shortestPathsPAirline(nearestAirport, cityAirport, airlineCode);
+            if(paths.empty()){
+                continue;
+            }
+            if (bestPaths.empty()||paths[0].size() < bestPaths[0].size()) {
+                bestPaths=paths;
+            }
+            else if(paths[0].size()==bestPaths[0].size()){
+                bestPaths.insert(bestPaths.end(),paths.begin(),paths.end());
             }
         }
     }
 
-    if (minStops == std::numeric_limits<int>::max()) {
+    if (bestPaths.empty()) {
         std::cout << "No flight paths found from the coordinates to any airport in " << cityName <<" using exclusively airline '"<<airlineCode<<"'"<< std::endl;
     } else {
-        while (!overallBestPath.empty()) {
-            auto best =overallBestPath.front();
-            overallBestPath.pop();
+        for (const auto path:bestPaths){
             std::cout << "Best flight option from coordinates (" << lat << ", " << lon << ") to " << cityName <<"using exclusively airline '"<<airlineCode<<"' "
-                      << " (" << minStops << " stops):" << std::endl;
-            for (const auto &airport: best.second) {
-                std::cout << "- " << airport.getName() << " (" << airport.getCode() << ")"
-                          << " at coordinates (" << airport.getLatitude() << ", " << airport.getLongitude() << ")"
+                      << " (" << bestPaths[0].size() << " stops):" << std::endl;
+            for (const auto &airport: path) {
+                std::cout << "- " << airport->getInfo().getName() << " (" << airport->getInfo().getCode() << ")"
+                          << " at coordinates (" << airport->getInfo().getLatitude() << ", " << airport->getInfo().getLongitude() << ")"
                           << std::endl;
             }
         }
@@ -1317,37 +1350,34 @@ void FlightManager::bfoCoordinatestoCoordinatesPAirline(double sourceLat, double
         }
     }
 
-    std::queue<std::pair<int, std::vector<Airport>>> bestPath;
-    int minStops = std::numeric_limits<int>::max();
+    std::vector<std::vector<Vertex<Airport>*>> bestPaths;
 
     for (auto &sourceNearestAirport: sourceNearestAirports) {
         for (auto &destNearestAirport: destNearestAirports) {
-            auto currentPath = findBestFlightPathPAirline(sourceNearestAirport, destNearestAirport,airlineCode);
-            if (currentPath.first < minStops) {
-                minStops = currentPath.first;
-                while (!bestPath.empty()) {
-                    bestPath.pop();
-                }
-                bestPath.push(currentPath);
-            } else if (currentPath.first == minStops) {
-                bestPath.push(currentPath);
+            auto paths = shortestPathsPAirline(sourceNearestAirport, destNearestAirport,airlineCode);
+            if(paths.empty()){
+                continue;
+            }
+            if (bestPaths.empty()||paths[0].size() < bestPaths[0].size()) {
+                bestPaths=paths;
+            }
+            else if(paths[0].size()==bestPaths[0].size()){
+                bestPaths.insert(bestPaths.end(),paths.begin(),paths.end());
             }
         }
     }
 
 
-    if (minStops == std::numeric_limits<int>::max()) {
+    if (bestPaths.empty()) {
         std::cout << "No flight path found between the nearest airports using exclusively airline '"<<airlineCode<<"'" << std::endl;
     } else {
-        while (!bestPath.empty()) {
-            auto best = bestPath.front();
-            bestPath.pop();
+        for (const auto path:bestPaths) {
             std::cout << "Best flight option from coordinates (" << sourceLat << ", " << sourceLon
                       << ") to coordinates ("
-                      << destLat << ", " << destLon << ") using exclusively airline '"<<airlineCode<<"' (" << minStops << " stops):" << std::endl;
-            for (const auto &airport: best.second) {
-                std::cout << "- " << airport.getName() << " (" << airport.getCode() << ")"
-                          << " at coordinates (" << airport.getLatitude() << ", " << airport.getLongitude() << ")"
+                      << destLat << ", " << destLon << ") using exclusively airline '"<<airlineCode<<"' (" << bestPaths[0].size() << " stops):" << std::endl;
+            for (const auto &airport: path) {
+                std::cout << "- " << airport->getInfo().getName() << " (" << airport->getInfo().getCode() << ")"
+                          << " at coordinates (" << airport->getInfo().getLatitude() << ", " << airport->getInfo().getLongitude() << ")"
                           << std::endl;
             }
         }

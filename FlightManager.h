@@ -27,9 +27,11 @@ private:
     std::pair<int, std::vector<Airport>> findBestFlightPathPAirline(
             Vertex<Airport>* sourceVertex, Vertex<Airport>* destVertex, const std::string& airlineCode);
 
+    std::vector<std::vector<Vertex<Airport>*>> shortestPathsPAirline(
+            Vertex<Airport>* startAirport, Vertex<Airport>* endAirport, const std::string& airlineCode);
 
 public:
-    FlightManager();
+     FlightManager() ;
 
     void loadAirports(const std::string &filename);
 
