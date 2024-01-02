@@ -341,6 +341,7 @@ void Menu::handleBestFlightOptionWithFilters() {
     std::cout << "Choose a filter:" << std::endl;
     std::cout << "1. Preferred airline" << std::endl;
     std::cout << "2. Maximum number of stops" << std::endl;
+    std::cout << "3. Maximum flights distance (Km)" << std::endl;
     std::cout << "Enter your choice: ";
     std::cin >> filterChoice;
 
@@ -350,6 +351,9 @@ void Menu::handleBestFlightOptionWithFilters() {
             break;
         case 2:
             handleMaxStopsFilter();
+            break;
+        case 3:
+            handleMaxFlightDistanceFilter();
             break;
         default:
             std::cout << "Invalid filter choice. Please try again." << std::endl;
@@ -809,4 +813,235 @@ void Menu::bfoCoordinatesToCoordinatesMaxStops() {
     }
 
     managementSystem.bfoCoordinatesToCoordinatesMaxStops(sourceLat, sourceLon, destLat, destLon, maxStops);
+}
+
+//MAX NUMBER OF KM
+
+void Menu::handleMaxFlightDistanceFilter() {
+    int choice;
+
+    std::cout << "Select your search criteria:" << std::endl;
+    std::cout << "1. From airport to airport" << std::endl;
+    std::cout << "2. From airport to city" << std::endl;
+    std::cout << "3. From airport to geographic coordinates" << std::endl;
+    std::cout << "4. From city to airport" << std::endl;
+    std::cout << "5. From city to city" << std::endl;
+    std::cout << "6. From city to geographic coordinates" << std::endl;
+    std::cout << "7. From geographic coordinates to airport" << std::endl;
+    std::cout << "8. From geographic coordinates to city" << std::endl;
+    std::cout << "9. From geographic coordinates to geographic coordinates" << std::endl;
+    std::cout << "Enter your choice: ";
+    std::cin >> choice;
+
+    switch (choice) {
+        case 1:
+            bfoAirportToAirportMaxDistance();
+            break;
+        case 2:
+            bfoAirportToCityMaxDistance();
+            break;
+        case 3:
+            bfoAirportToCoordinatesMaxDistance();
+            break;
+        case 4:
+            bfoCityToAirportMaxDistance();
+            break;
+        case 5:
+            bfoCityToCityMaxDistance();
+            break;
+        case 6:
+            bfoCityToCoordinatesMaxDistance();
+            break;
+        case 7:
+            bfoCoordinatesToAirportMaxDistance();
+            break;
+        case 8:
+            bfoCoordinatesToCityMaxDistance();
+            break;
+        case 9:
+            bfoCoordinatesToCoordinatesMaxDistance();
+            break;
+        default:
+            std::cout << "Invalid choice. Please try again." << std::endl;
+    }
+}
+
+
+void Menu::bfoAirportToAirportMaxDistance() {
+    std::string sourceCode, targetCode;
+    int maxDistance;
+
+    std::cout << "Enter the source airport code: ";
+    std::cin.ignore();
+    std::getline(std::cin, sourceCode);
+
+    std::cout << "Enter the target airport code: ";
+    std::getline(std::cin, targetCode);
+
+    std::cout << "Enter the maximum flight distance (in kilometers): ";
+    std::cin >> maxDistance;
+
+    managementSystem.bfoAirportToAirportMaxDistance(sourceCode, targetCode, maxDistance);
+}
+
+void Menu::bfoAirportToCityMaxDistance() {
+    std::string sourceCode, targetCity;
+    int maxDistance;
+
+    std::cout << "Enter the source airport code: ";
+    std::cin.ignore();
+    std::getline(std::cin, sourceCode);
+
+    std::cout << "Enter the target city name: ";
+    std::getline(std::cin, targetCity);
+
+    std::cout << "Enter the maximum flight distance (in kilometers): ";
+    std::cin >> maxDistance;
+
+    if (maxDistance < 0) {
+        std::cout << "Invalid flight distance. Please enter a non-negative number." << std::endl;
+        return;
+    }
+
+    managementSystem.bfoAirportToCityMaxDistance(sourceCode, targetCity, maxDistance);
+}
+
+void Menu::bfoAirportToCoordinatesMaxDistance() {
+    std::string sourceCode;
+    double lat, lon;
+    int maxDistance;
+
+    std::cout << "Enter the source airport code: ";
+    std::cin.ignore();
+    std::getline(std::cin, sourceCode);
+
+    std::cout << "Enter the latitude: ";
+    std::cin >> lat;
+
+    std::cout << "Enter the longitude: ";
+    std::cin >> lon;
+
+    std::cout << "Enter the maximum flight distance (in kilometers): ";
+    std::cin >> maxDistance;
+
+    managementSystem.bfoAirportToCoordinatesMaxDistance(sourceCode, lat, lon, maxDistance);
+}
+
+void Menu::bfoCityToAirportMaxDistance() {
+    std::string cityName, airportCode;
+    int maxDistance;
+
+    std::cout << "Enter the city name: ";
+    std::cin.ignore();
+    std::getline(std::cin, cityName);
+
+    std::cout << "Enter the target airport code: ";
+    std::getline(std::cin, airportCode);
+
+    std::cout << "Enter the maximum flight distance (in kilometers): ";
+    std::cin >> maxDistance;
+
+    managementSystem.bfoCityToAirportMaxDistance(cityName, airportCode, maxDistance);
+}
+
+void Menu::bfoCityToCityMaxDistance() {
+    std::string sourceCity, destCity;
+    int maxDistance;
+
+    std::cout << "Enter the source city name: ";
+    std::cin.ignore();
+    std::getline(std::cin, sourceCity);
+
+    std::cout << "Enter the destination city name: ";
+    std::getline(std::cin, destCity);
+
+    std::cout << "Enter the maximum flight distance (in kilometers): ";
+    std::cin >> maxDistance;
+
+    managementSystem.bfoCityToCityMaxDistance(sourceCity, destCity, maxDistance);
+}
+
+void Menu::bfoCityToCoordinatesMaxDistance() {
+    std::string cityName;
+    double lat, lon;
+    int maxDistance;
+
+    std::cout << "Enter the city name: ";
+    std::cin.ignore();
+    std::getline(std::cin, cityName);
+
+    std::cout << "Enter the latitude: ";
+    std::cin >> lat;
+
+    std::cout << "Enter the longitude: ";
+    std::cin >> lon;
+
+    std::cout << "Enter the maximum flight distance (in kilometers): ";
+    std::cin >> maxDistance;
+
+    managementSystem.bfoCityToCoordinatesMaxDistance(cityName, lat, lon, maxDistance);
+}
+
+void Menu::bfoCoordinatesToAirportMaxDistance() {
+    double sourceLat, sourceLon;
+    std::string targetAirportCode;
+    int maxDistance;
+
+    std::cout << "Enter source latitude: ";
+    std::cin >> sourceLat;
+
+    std::cout << "Enter source longitude: ";
+    std::cin >> sourceLon;
+
+    std::cout << "Enter the target airport code: ";
+    std::cin.ignore();
+    std::getline(std::cin, targetAirportCode);
+
+    std::cout << "Enter the maximum flight distance (in kilometers): ";
+    std::cin >> maxDistance;
+
+    managementSystem.bfoCoordinatesToAirportMaxDistance(sourceLat, sourceLon, targetAirportCode, maxDistance);
+}
+
+void Menu::bfoCoordinatesToCityMaxDistance() {
+    double sourceLat, sourceLon;
+    std::string targetCity;
+    int maxDistance;
+
+    std::cout << "Enter source latitude: ";
+    std::cin >> sourceLat;
+
+    std::cout << "Enter source longitude: ";
+    std::cin >> sourceLon;
+
+    std::cout << "Enter the target city name: ";
+    std::cin.ignore();
+    std::getline(std::cin, targetCity);
+
+    std::cout << "Enter the maximum flight distance (in kilometers): ";
+    std::cin >> maxDistance;
+
+    managementSystem.bfoCoordinatesToCityMaxDistance(sourceLat, sourceLon, targetCity, maxDistance);
+}
+
+void Menu::bfoCoordinatesToCoordinatesMaxDistance() {
+    double sourceLat, sourceLon, destLat, destLon;
+    int maxDistance;
+
+    std::cout << "Enter source latitude: ";
+    std::cin >> sourceLat;
+
+    std::cout << "Enter source longitude: ";
+    std::cin >> sourceLon;
+
+    std::cout << "Enter destination latitude: ";
+    std::cin >> destLat;
+
+    std::cout << "Enter destination longitude: ";
+    std::cin >> destLon;
+
+    std::cout << "Enter the maximum flight distance (in kilometers): ";
+    std::cin >> maxDistance;
+
+    managementSystem.bfoCoordinatesToCoordinatesMaxDistance(sourceLat, sourceLon, destLat, destLon, maxDistance);
 }

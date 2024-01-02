@@ -109,6 +109,28 @@ private:
     void bfoCoordinatesToCityMaxStops();
 
     void bfoCoordinatesToCoordinatesMaxStops();
+
+    //MAX Flight Distance
+
+    void handleMaxFlightDistanceFilter();
+
+    void bfoAirportToAirportMaxDistance();
+
+    void bfoAirportToCityMaxDistance();
+
+    void bfoAirportToCoordinatesMaxDistance();
+
+    void bfoCityToAirportMaxDistance();
+
+    void bfoCityToCityMaxDistance();
+
+    void bfoCityToCoordinatesMaxDistance();
+
+    void bfoCoordinatesToAirportMaxDistance();
+
+    void bfoCoordinatesToCityMaxDistance();
+
+    void bfoCoordinatesToCoordinatesMaxDistance();
 };
 
 

@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <climits>
 #include <limits>
+#include <cmath>
 
 /**
     * @brief Constructor of the FlightManager class.
@@ -2113,3 +2114,408 @@ FlightManager::bfoCoordinatesToCoordinatesMaxStops(double sourceLat, double sour
         }
     }
 }
+
+
+//MAX Flight Distance
+
+double degToRad(double deg) {
+    return deg * (M_PI / 180);
+}
+
+double calculateDistance(Vertex<Airport>* airport1, Vertex<Airport>* airport2) {
+    double lat1 = degToRad(airport1->getInfo().getLatitude());
+    double lon1 = degToRad(airport1->getInfo().getLongitude());
+    double lat2 = degToRad(airport2->getInfo().getLatitude());
+    double lon2 = degToRad(airport2->getInfo().getLongitude());
+
+    double dLat = lat2 - lat1;
+    double dLon = lon2 - lon1;
+
+    double a = pow(sin(dLat / 2), 2) + cos(lat1) * cos(lat2) * pow(sin(dLon / 2), 2);
+    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+
+    const double RADIUS_EARTH_KM = 6371;
+    return RADIUS_EARTH_KM * c;
+}
+
+std::vector<std::pair<std::vector<Vertex<Airport>*>, int>> FlightManager::shortestPathsWithinDistance(
+        Vertex<Airport>* startAirport, Vertex<Airport>* endAirport, int maxDistance) {
+
+
+
+    std::priority_queue<std::tuple<int, std::vector<Vertex<Airport>*>, int, int>,
+            std::vector<std::tuple<int, std::vector<Vertex<Airport>*>, int, int>>,
+            std::greater<>> pq;
+
+    pq.push(std::make_tuple(0, std::vector<Vertex<Airport>*>{startAirport}, 0, calculateDistance(startAirport, endAirport)));
+
+    std::set<std::pair<std::vector<Vertex<Airport>*>, int>> uniquePaths;
+    int iterationCounter = 0;
+
+    while (!pq.empty() && iterationCounter < MAX_ITERATIONS) {
+        auto [currentStops, currentPath, currentTotalDistance, heuristicDistance] = pq.top();
+        pq.pop();
+
+        Vertex<Airport>* currentNode = currentPath.back();
+
+        if (currentNode == endAirport && currentTotalDistance <= maxDistance) {
+            uniquePaths.insert(std::make_pair(currentPath, currentTotalDistance));
+            continue;
+        }
+
+        iterationCounter++;
+
+        for (const auto& flight : currentNode->getAdj()) {
+            auto neighbor = flight.getDest();
+            int flightDistance = calculateDistance(currentNode, neighbor);
+
+            int newTotalDistance = currentTotalDistance + flightDistance;
+            if (newTotalDistance <= maxDistance) {
+                std::vector<Vertex<Airport>*> newPath = currentPath;
+                newPath.push_back(neighbor);
+                int newHeuristicDistance = calculateDistance(neighbor, endAirport);
+                pq.push(std::make_tuple(currentStops + 1, newPath, newTotalDistance, newHeuristicDistance));
+            }
+        }
+    }
+
+    return std::vector<std::pair<std::vector<Vertex<Airport>*>, int>>(uniquePaths.begin(), uniquePaths.end());
+}
+
+
+
+void FlightManager::bfoAirportToAirportMaxDistance(const std::string& sourceCode, const std::string& targetCode, int maxDistance) {
+    auto sourceVertex = findAirportVertexByNameOrCode(sourceCode);
+    auto targetVertex = findAirportVertexByNameOrCode(targetCode);
+
+    if (!sourceVertex || !targetVertex) {
+        std::cout << "Airport(s) not found." << std::endl;
+        return;
+    }
+
+    if (sourceVertex == targetVertex) {
+        std::cout << "Source and destination airports are the same." << std::endl;
+        return;
+    }
+
+    auto pathOptions = shortestPathsWithinDistance(sourceVertex, targetVertex, maxDistance);
+
+    if (pathOptions.empty()) {
+        std::cout << "No paths found within " << maxDistance << " km." << std::endl;
+    } else {
+        for (const auto& [path, totalDistance] : pathOptions) {
+            std::cout << "Flight Option within " << maxDistance << " km (Total distance: " << totalDistance << " km, " << path.size() - 1 << " stops):" << std::endl;
+            for (const auto& airport : path) {
+                std::cout << "- " << airport->getInfo().getName() << " (" << airport->getInfo().getCode() << ")"
+                          << " at coordinates (" << airport->getInfo().getLatitude() << ", " << airport->getInfo().getLongitude() << ")"
+                          << std::endl;
+            }
+        }
+    }
+}
+
+std::vector<std::pair<std::vector<Vertex<Airport>*>, int>> FlightManager::shortestPathsToCityWithinDistance(
+        Vertex<Airport>* startAirport, const std::string& cityName, int maxDistance) {
+
+    std::vector<Vertex<Airport>*> cityAirports = findAirportsInCity(cityName);
+
+    std::priority_queue<std::tuple<int, std::vector<Vertex<Airport>*>, int>,
+            std::vector<std::tuple<int, std::vector<Vertex<Airport>*>, int>>,
+            std::greater<>> pq;
+
+    pq.push(std::make_tuple(0, std::vector<Vertex<Airport>*>{startAirport}, 0));
+
+    std::set<std::pair<std::vector<Vertex<Airport>*>, int>> uniquePaths;
+    int iterationCounter = 0;
+
+    while (!pq.empty() && iterationCounter < MAX_ITERATIONS) {
+        auto [currentStops, currentPath, currentTotalDistance] = pq.top();
+        pq.pop();
+        iterationCounter++;
+
+        Vertex<Airport>* currentNode = currentPath.back();
+
+        if (std::find(cityAirports.begin(), cityAirports.end(), currentNode) != cityAirports.end() && currentTotalDistance <= maxDistance) {
+            uniquePaths.insert(std::make_pair(currentPath, currentTotalDistance));
+            continue;
+        }
+
+        for (const auto& flight : currentNode->getAdj()) {
+            auto neighbor = flight.getDest();
+            int flightDistance = calculateDistance(currentNode, neighbor);
+
+            int newTotalDistance = currentTotalDistance + flightDistance;
+            if (newTotalDistance <= maxDistance) {
+                std::vector<Vertex<Airport>*> newPath = currentPath;
+                newPath.push_back(neighbor);
+                pq.push(std::make_tuple(currentStops + 1, newPath, newTotalDistance));
+            }
+        }
+    }
+
+    return std::vector<std::pair<std::vector<Vertex<Airport>*>, int>>(uniquePaths.begin(), uniquePaths.end());
+}
+
+
+
+void FlightManager::bfoAirportToCityMaxDistance(const std::string& sourceCode, const std::string& targetCity, int maxDistance) {
+    auto sourceVertex = findAirportVertexByNameOrCode(sourceCode);
+    if (!sourceVertex) {
+        std::cout << "Source airport not found." << std::endl;
+        return;
+    }
+
+    auto pathOptions = shortestPathsToCityWithinDistance(sourceVertex, targetCity, maxDistance);
+
+    if (pathOptions.empty()) {
+        std::cout << "No paths found within " << maxDistance << " km to " << targetCity << "." << std::endl;
+    } else {
+        for (const auto& [path, totalDistance] : pathOptions) {
+            std::cout << "Flight Option to " << targetCity << " within " << maxDistance << " km (Total distance: " << totalDistance << " km, " << path.size() - 1 << " stops):" << std::endl;
+            for (const auto& airport : path) {
+                std::cout << "- " << airport->getInfo().getName() << " (" << airport->getInfo().getCode() << ")"
+                          << " at coordinates (" << airport->getInfo().getLatitude() << ", " << airport->getInfo().getLongitude() << ")"
+                          << std::endl;
+            }
+        }
+    }
+}
+
+
+
+void FlightManager::bfoAirportToCoordinatesMaxDistance(const std::string& sourceCode, double lat, double lon, int maxDistance) {
+    auto sourceAirport = findAirportVertexByNameOrCode(sourceCode);
+    std::vector<Vertex<Airport>*> targetAirports = findNearestAirportToCoordinates(lat, lon);
+
+    if (!sourceAirport || targetAirports.empty()) {
+        std::cout << "Source airport or nearest airport not found." << std::endl;
+        return;
+    }
+
+    std::vector<std::pair<std::vector<Vertex<Airport>*>, int>> bestPaths;
+    for (auto& destAirport : targetAirports) {
+        auto pathOptions = shortestPathsWithinDistance(sourceAirport, destAirport, maxDistance);
+        for (auto& pathOption : pathOptions) {
+            bestPaths.push_back(pathOption);
+        }
+    }
+
+    if (bestPaths.empty()) {
+        std::cout << "No flight path found from " << sourceCode << " to coordinates (" << lat << ", " << lon << ") within " << maxDistance << " km." << std::endl;
+    } else {
+        for (const auto& [path, totalDistance] : bestPaths) {
+            std::cout << "Flight Option to coordinates (" << lat << ", " << lon << ") with " << path.size() - 1 << " stops (Total distance: " << totalDistance << " km):" << std::endl;
+            for (const auto& airport : path) {
+                std::cout << "- " << airport->getInfo().getName() << " (" << airport->getInfo().getCode() << ")"
+                          << " at coordinates (" << airport->getInfo().getLatitude() << ", " << airport->getInfo().getLongitude() << ")"
+                          << std::endl;
+            }
+        }
+    }
+}
+
+void FlightManager::bfoCityToAirportMaxDistance(const std::string& cityName, const std::string& airportCode, int maxDistance) {
+    auto cityAirports = findAirportsInCity(cityName);
+    auto targetAirport = findAirportVertexByNameOrCode(airportCode);
+
+    if (cityAirports.empty()) {
+        std::cout << "No airports found in the city: " << cityName << std::endl;
+        return;
+    }
+
+    if (!targetAirport) {
+        std::cout << "Target airport not found: " << airportCode << std::endl;
+        return;
+    }
+
+    std::vector<std::pair<std::vector<Vertex<Airport>*>, int>> pathOptions;
+    for (auto& cityAirport : cityAirports) {
+        auto paths = shortestPathsWithinDistance(cityAirport, targetAirport, maxDistance);
+        pathOptions.insert(pathOptions.end(), paths.begin(), paths.end());
+    }
+
+    if (pathOptions.empty()) {
+        std::cout << "No paths found within " << maxDistance << " km from " << cityName << " to " << airportCode << "." << std::endl;
+    } else {
+        for (const auto& [path, totalDistance] : pathOptions) {
+            std::cout << "Flight Option within " << maxDistance << " km (Total distance: " << totalDistance << " km, " << path.size() - 1 << " stops):" << std::endl;
+            for (const auto& airport : path) {
+                std::cout << "- " << airport->getInfo().getName() << " (" << airport->getInfo().getCode() << ")"
+                          << " at coordinates (" << airport->getInfo().getLatitude() << ", " << airport->getInfo().getLongitude() << ")"
+                          << std::endl;
+            }
+        }
+    }
+}
+
+void FlightManager::bfoCityToCityMaxDistance(const std::string& sourceCity, const std::string& destCity, int maxDistance) {
+    auto sourceAirports = findAirportsInCity(sourceCity);
+    auto destAirports = findAirportsInCity(destCity);
+
+    if (sourceAirports.empty() || destAirports.empty()) {
+        std::cout << "Airports not found in one or both cities." << std::endl;
+        return;
+    }
+
+    std::vector<std::pair<std::vector<Vertex<Airport>*>, int>> pathOptions;
+    for (auto& sourceAirport : sourceAirports) {
+        for (auto& destAirport : destAirports) {
+            auto paths = shortestPathsWithinDistance(sourceAirport, destAirport, maxDistance);
+            pathOptions.insert(pathOptions.end(), paths.begin(), paths.end());
+        }
+    }
+
+    if (pathOptions.empty()) {
+        std::cout << "No paths found within " << maxDistance << " km between " << sourceCity << " and " << destCity << "." << std::endl;
+    } else {
+        for (const auto& [path, totalDistance] : pathOptions) {
+            std::cout << "Flight Option within " << maxDistance << " km between " << sourceCity << " and " << destCity
+                      << " (Total distance: " << totalDistance << " km, " << path.size() - 1 << " stops):" << std::endl;
+            for (const auto& airport : path) {
+                std::cout << "- " << airport->getInfo().getName() << " (" << airport->getInfo().getCode() << ")"
+                          << " at coordinates (" << airport->getInfo().getLatitude() << ", " << airport->getInfo().getLongitude() << ")"
+                          << std::endl;
+            }
+        }
+    }
+}
+
+void FlightManager::bfoCityToCoordinatesMaxDistance(const std::string& cityName, double lat, double lon, int maxDistance) {
+    auto cityAirports = findAirportsInCity(cityName);
+    if (cityAirports.empty()) {
+        std::cout << "No airports found in the city: " << cityName << std::endl;
+        return;
+    }
+
+    auto nearestAirports = findNearestAirportToCoordinates(lat, lon);
+    if (nearestAirports.empty()) {
+        std::cout << "No nearby airport found for the given coordinates." << std::endl;
+        return;
+    }
+
+    std::vector<std::pair<std::vector<Vertex<Airport>*>, int>> pathOptions;
+    for (auto& cityAirport : cityAirports) {
+        for (auto& nearestAirport : nearestAirports) {
+            auto paths = shortestPathsWithinDistance(cityAirport, nearestAirport, maxDistance);
+            pathOptions.insert(pathOptions.end(), paths.begin(), paths.end());
+        }
+    }
+
+    if (pathOptions.empty()) {
+        std::cout << "No paths found within " << maxDistance << " km from " << cityName << " to coordinates (" << lat << ", " << lon << ")." << std::endl;
+    } else {
+        for (const auto& [path, totalDistance] : pathOptions) {
+            std::cout << "Flight Option within " << maxDistance << " km from " << cityName << " to coordinates ("
+                      << lat << ", " << lon << ") (Total distance: " << totalDistance << " km, " << path.size() - 1 << " stops):" << std::endl;
+            for (const auto& airport : path) {
+                std::cout << "- " << airport->getInfo().getName() << " (" << airport->getInfo().getCode() << ")"
+                          << " at coordinates (" << airport->getInfo().getLatitude() << ", " << airport->getInfo().getLongitude() << ")"
+                          << std::endl;
+            }
+        }
+    }
+}
+
+void FlightManager::bfoCoordinatesToAirportMaxDistance(double sourceLat, double sourceLon, const std::string& targetAirportCode, int maxDistance) {
+    auto nearestAirports = findNearestAirportToCoordinates(sourceLat, sourceLon);
+    if (nearestAirports.empty()) {
+        std::cout << "No nearby airport found for the given coordinates." << std::endl;
+        return;
+    }
+
+    auto targetAirport = findAirportVertexByNameOrCode(targetAirportCode);
+    if (!targetAirport) {
+        std::cout << "Target airport not found: " << targetAirportCode << std::endl;
+        return;
+    }
+
+    std::vector<std::pair<std::vector<Vertex<Airport>*>, int>> pathOptions;
+    for (auto& nearestAirport : nearestAirports) {
+        auto paths = shortestPathsWithinDistance(nearestAirport, targetAirport, maxDistance);
+        pathOptions.insert(pathOptions.end(), paths.begin(), paths.end());
+    }
+
+    if (pathOptions.empty()) {
+        std::cout << "No paths found within " << maxDistance << " km from coordinates (" << sourceLat << ", " << sourceLon << ") to " << targetAirportCode << "." << std::endl;
+    } else {
+        for (const auto& [path, totalDistance] : pathOptions) {
+            std::cout << "Flight Option within " << maxDistance << " km from coordinates (" << sourceLat << ", " << sourceLon << ") to " << targetAirportCode
+                      << " (Total distance: " << totalDistance << " km, " << path.size() - 1 << " stops):" << std::endl;
+            for (const auto& airport : path) {
+                std::cout << "- " << airport->getInfo().getName() << " (" << airport->getInfo().getCode() << ")"
+                          << " at coordinates (" << airport->getInfo().getLatitude() << ", " << airport->getInfo().getLongitude() << ")"
+                          << std::endl;
+            }
+        }
+    }
+}
+
+void FlightManager::bfoCoordinatesToCityMaxDistance(double sourceLat, double sourceLon, const std::string& targetCity, int maxDistance) {
+    auto nearestAirports = findNearestAirportToCoordinates(sourceLat, sourceLon);
+    if (nearestAirports.empty()) {
+        std::cout << "No nearby airport found for the given coordinates." << std::endl;
+        return;
+    }
+
+    std::vector<Vertex<Airport>*> cityAirports = findAirportsInCity(targetCity);
+    if (cityAirports.empty()) {
+        std::cout << "No airports found in the city: " << targetCity << std::endl;
+        return;
+    }
+
+    std::vector<std::pair<std::vector<Vertex<Airport>*>, int>> pathOptions;
+    for (auto& nearestAirport : nearestAirports) {
+        for (auto& cityAirport : cityAirports) {
+            auto paths = shortestPathsWithinDistance(nearestAirport, cityAirport, maxDistance);
+            pathOptions.insert(pathOptions.end(), paths.begin(), paths.end());
+        }
+    }
+
+    if (pathOptions.empty()) {
+        std::cout << "No paths found within " << maxDistance << " km from coordinates (" << sourceLat << ", " << sourceLon << ") to " << targetCity << "." << std::endl;
+    } else {
+        for (const auto& [path, totalDistance] : pathOptions) {
+            std::cout << "Flight Option within " << maxDistance << " km from coordinates (" << sourceLat << ", " << sourceLon << ") to " << targetCity
+                      << " (Total distance: " << totalDistance << " km, " << path.size() - 1 << " stops):" << std::endl;
+            for (const auto& airport : path) {
+                std::cout << "- " << airport->getInfo().getName() << " (" << airport->getInfo().getCode() << ")"
+                          << " at coordinates (" << airport->getInfo().getLatitude() << ", " << airport->getInfo().getLongitude() << ")"
+                          << std::endl;
+            }
+        }
+    }
+}
+
+
+void FlightManager::bfoCoordinatesToCoordinatesMaxDistance(double sourceLat, double sourceLon, double destLat, double destLon, int maxDistance) {
+    auto sourceNearestAirports = findNearestAirportToCoordinates(sourceLat, sourceLon);
+    auto destNearestAirports = findNearestAirportToCoordinates(destLat, destLon);
+
+    if (sourceNearestAirports.empty() || destNearestAirports.empty()) {
+        std::cout << "No nearby airports found for the given coordinates." << std::endl;
+        return;
+    }
+
+    std::vector<std::pair<std::vector<Vertex<Airport>*>, int>> pathOptions;
+    for (auto& sourceAirport : sourceNearestAirports) {
+        for (auto& destAirport : destNearestAirports) {
+            auto paths = shortestPathsWithinDistance(sourceAirport, destAirport, maxDistance);
+            pathOptions.insert(pathOptions.end(), paths.begin(), paths.end());
+        }
+    }
+
+    if (pathOptions.empty()) {
+        std::cout << "No paths found within " << maxDistance << " km between coordinates (" << sourceLat << ", " << sourceLon << ") and (" << destLat << ", " << destLon << ")." << std::endl;
+    } else {
+        for (const auto& [path, totalDistance] : pathOptions) {
+            std::cout << "Flight Option within " << maxDistance << " km between coordinates (" << sourceLat << ", " << sourceLon << ") and (" << destLat << ", " << destLon
+                      << ") (Total distance: " << totalDistance << " km, " << path.size() - 1 << " stops):" << std::endl;
+            for (const auto& airport : path) {
+                std::cout << "- " << airport->getInfo().getName() << " (" << airport->getInfo().getCode() << ")"
+                          << " at coordinates (" << airport->getInfo().getLatitude() << ", " << airport->getInfo().getLongitude() << ")"
+                          << std::endl;
+            }
+        }
+    }
+}
+
