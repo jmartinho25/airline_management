@@ -1,6 +1,4 @@
-/*
- * Graph.h
- */
+
 #ifndef GRAPH_H_
 #define GRAPH_H_
 
@@ -24,6 +22,9 @@ class Vertex;
 
 /****************** Provided structures  ********************/
 
+/**
+ * @brief Defines what a Vertex is and its composition
+ */
 template<class T>
 class Vertex {
     T info;                // contents
@@ -77,6 +78,9 @@ public:
     }
 };
 
+/**
+ * @brief Defines what an Edge is and its composition
+ */
 template<class T>
 class Edge {
     Vertex<T> *dest;      // destination vertex
@@ -100,6 +104,9 @@ public:
     std::string getAirlineCode() const;
 };
 
+/**
+ * @brief Defines what a Graph is and its composition
+ */
 template<class T>
 class Graph {
     vector<Vertex<T> *> vertexSet;      // vertex set
@@ -139,48 +146,95 @@ public:
 
 /****************** Provided constructors and functions ********************/
 
+/**
+    * @brief Constructor of the Vertex class.
+    * @details Time complexity: O(1)
+    * @param in Vertex information
+    */
 template<class T>
 Vertex<T>::Vertex(T in): info(in) {}
 
+/**
+    * @brief Constructor of the Edge class.
+    * @details Time complexity: O(1)
+    * @param d Edge destination vertex
+    * @param w Edge weight
+    * @param airline Edge airline, as each edge will represent a flight
+    */
 template<class T>
 Edge<T>::Edge(Vertex<T> *d, double w, std::string airline)
         : dest(d), weight(w), airlineCode(airline) {}
 
 
+/**
+* @brief Gets the number of vertexes in a graph.
+* @details Time complexity: O(1)
+* @return Number of vertexes in a specific Graph (using the size of the vertexSet)
+*/
 template<class T>
 int Graph<T>::getNumVertex() const {
     return vertexSet.size();
 }
 
+/**
+* @brief Gets the set of vertexes in a graph.
+* @details Time complexity: O(1)
+* @return Set of vertexes in a specific Graph (in this case a vector containing all the vertexes of the graph)
+*/
 template<class T>
 vector<Vertex<T> *> Graph<T>::getVertexSet() const {
     return vertexSet;
 }
 
+/**
+* @brief Gets the information of a vertex.
+* @details Time complexity: O(1)
+* @return Information of the vertex
+*/
 template<class T>
 T Vertex<T>::getInfo() const {
     return info;
 }
 
+/**
+* @brief Sets the information of a vertex to the information received as parameter
+* @param in Information to be set as the vertex information
+*/
 template<class T>
 void Vertex<T>::setInfo(T in) {
     Vertex::info = in;
 }
 
+/**
+* @brief Gets the process state of a vertex
+* @details Time complexity: O(1)
+* @return True if the vertex is processing, False otherwise
+*/
 template<class T>
 bool Vertex<T>::isProcessing() const {
     return processing;
 }
 
+/**
+* @brief Sets the process state of a vertex to the state received as parameter
+* @details Time complexity: O(1)
+* @param p Process state to be set as the vertex process state
+*/
 template<class T>
 void Vertex<T>::setProcessing(bool p) {
     Vertex::processing = p;
 }
 
+/**
+* @brief Gets the destination vertex of an edge
+* @details Time complexity: O(1)
+* @return Destination vertex of the edge
+*/
 template<class T>
 Vertex<T> *Edge<T>::getDest() const {
     return dest;
 }
+
 
 template<class T>
 void Edge<T>::setDest(Vertex<T> *d) {
@@ -192,6 +246,11 @@ double Edge<T>::getWeight() const {
     return weight;
 }
 
+/**
+* @brief Gets the code of the edge airline
+* @details Time complexity: O(1)
+* @return Airline code
+*/
 template<class T>
 std::string Edge<T>::getAirlineCode() const {
     return airlineCode;
@@ -203,8 +262,11 @@ void Edge<T>::setWeight(double weight) {
     Edge::weight = weight;
 }
 
-/*
- * Auxiliary function to find a vertex with a given content.
+/**
+ * @brief Function to find a vertex with a given content(information).
+ * @details Time complexity: O(V) where V is the number of vertices in vertexSet
+ * @param in Information to be used in th search of the vertex
+ * @return The vertex with the given information if it´s found, NULL if any vertex with that information is found
  */
 template<class T>
 Vertex<T> *Graph<T>::findVertex(const T &in) const {
@@ -214,31 +276,61 @@ Vertex<T> *Graph<T>::findVertex(const T &in) const {
     return NULL;
 }
 
+/**
+* @brief Gets the visit state of a vertex
+* @details Time complexity: O(1)
+* @return True if the vertex has already been visited, False otherwise
+*/
 template<class T>
 bool Vertex<T>::isVisited() const {
     return visited;
 }
 
+/**
+* @brief Gets the number of incoming edges of a given vertex
+* @details Time complexity: O(1)
+* @return Number of incoming edges of the vertex
+*/
 template<class T>
 int Vertex<T>::getIndegree() const {
     return indegree;
 }
 
+/**
+* @brief Sets the number of incoming edges of a given vertex to a value given as parameter
+* @details Time complexity: O(1)
+* @param indegree Number to be set as the number of incoming edges of the vertex
+*/
 template<class T>
 void Vertex<T>::setIndegree(int indegree) {
     Vertex::indegree = indegree;
 }
 
+/**
+* @brief Gets the order in which the vertex is visited (num)
+* @details Time complexity: O(1)
+* @return Order in which the vertex is visited (num)
+*/
 template<class T>
 int Vertex<T>::getNum() const {
     return num;
 }
 
+/**
+* @brief Sets the order in which the vertex is visited (num) to a value given as parameter
+* @details Time complexity: O(1)
+* @param num Number to be set as the order in which the vertex is visited (num)
+*/
 template<class T>
 void Vertex<T>::setNum(int num) {
     Vertex::num = num;
 }
 
+/**
+* @brief Gets the smallest num reachable by the subtree that starts in the vertex (low)
+* @details Time complexity: O(1)
+* @return Smallest num reachable by the subtree that starts in the vertex (low)
+*/
 template<class T>
 int Vertex<T>::getLow() const {
     return low;
@@ -249,11 +341,21 @@ void Vertex<T>::setLow(int low) {
     Vertex::low = low;
 }
 
+/**
+* @brief Sets the visit state of a vertex to the state received as parameter
+* @details Time complexity: O(1)
+* @param v Visit state to be set as the vertex visit state
+*/
 template<class T>
 void Vertex<T>::setVisited(bool v) {
     Vertex::visited = v;
 }
 
+/**
+* @brief Gets the outgoing edges of the vertex
+* @details Time complexity: O(1)
+* @return Vector including all outgoing edges of the vertex
+*/
 template<class T>
 const vector<Edge<T>> &Vertex<T>::getAdj() const {
     return adj;
@@ -293,9 +395,12 @@ bool Graph<T>::addEdge(const T &sourc, const T &dest, double w, std::string airl
     return true;
 }
 
-/*
- * Auxiliary function to add an outgoing edge to a vertex (this),
- * with a given destination vertex (d) and edge weight (w).
+/**
+ * @brief Function to add an outgoing edge to a vertex, with a given destination vertex (d), edge weight (w) and airline.
+ * @details Time complexity: O(1)
+ * @param d Destination vertex of the edge
+ * @param w Weight of the edge
+ * @param airline Airline of the edge
  */
 template<class T>
 void Vertex<T>::addEdge(Vertex<T> *d, double w, std::string airline) {
@@ -317,10 +422,11 @@ bool Graph<T>::removeEdge(const T &sourc, const T &dest) {
     return v1->removeEdgeTo(v2);
 }
 
-/*
- * Auxiliary function to remove an outgoing edge (with a given destination (d))
- * from a vertex (this).
- * Returns true if successful, and false if such edge does not exist.
+/**
+ * @brief Function to remove an outgoing edge (with a given destination (d)) from a vertex.
+ * @details O(E) where E is the number of outgoing edges from the current vertex
+ * @param d Destination vertex of the edge
+ * @return True if successful, and false if such edge does not exist.
  */
 template<class T>
 bool Vertex<T>::removeEdgeTo(Vertex<T> *d) {
@@ -373,7 +479,7 @@ vector<T> Graph<T>::dfs() const {
  * Auxiliary function that visits a vertex (v) and its adjacent, recursively.
  * Updates a parameter with the list of visited node contents.
  */
-template<class T>
+/*template<class T>
 void Graph<T>::dfsVisit(Vertex<T> *v, vector<T> &res) const {
     v->visited = true;
     res.push_back(v->info);
@@ -382,7 +488,7 @@ void Graph<T>::dfsVisit(Vertex<T> *v, vector<T> &res) const {
         if (!w->visited)
             dfsVisit(w, res);
     }
-}
+}*/
 
 
 
@@ -408,10 +514,11 @@ vector<T> Graph<T>::dfs(const T &source) const {
 
 
 /****************** BFS ********************/
-/*
- * Performs a breadth-first search (bfs) in a graph (this), starting
- * from the vertex with the given source contents (source).
- * Returns a vector with the contents of the vertices by bfs order.
+/**
+ * @brief Performs a breadth-first search (bfs) in a graph, starting from the vertex with the given source contents (source).
+ * @details Time complexity: O(V + E) where V is the number of vertices and E is the number of edges in the graph.
+ * @param source Information of the source vertex
+ * @return Vector with the contents of the vertices by bfs order.
  */
 template<class T>
 vector<T> Graph<T>::bfs(const T &source) const {
@@ -449,7 +556,7 @@ vector<T> Graph<T>::bfs(const T &source) const {
  * Returns true if the graph is acyclic, and false otherwise.
  */
 
-template<class T>
+/*template<class T>
 bool Graph<T>::isDAG() const {
     for (auto v: vertexSet) {
         v->visited = false;
@@ -460,13 +567,13 @@ bool Graph<T>::isDAG() const {
             if (!dfsIsDAG(v))
                 return false;
     return true;
-}
+}*/
 
-/**
+/*
  * Auxiliary function that visits a vertex (v) and its adjacent, recursively.
  * Returns false (not acyclic) if an edge to a vertex in the stack is found.
  */
-template<class T>
+/*template<class T>
 bool Graph<T>::dfsIsDAG(Vertex<T> *v) const {
     v->visited = true;
     v->processing = true;
@@ -480,7 +587,7 @@ bool Graph<T>::dfsIsDAG(Vertex<T> *v) const {
     }
     v->processing = false;
     return true;
-}
+}*/
 
 
 /****************** toposort ********************/
@@ -495,7 +602,7 @@ bool Graph<T>::dfsIsDAG(Vertex<T> *v) const {
  * Follows the algorithm described in theoretical classes.
  */
 
-template<class T>
+/*template<class T>
 vector<T> Graph<T>::topsort() const {
     vector<T> res;
     for (auto v: vertexSet) {
@@ -528,6 +635,6 @@ vector<T> Graph<T>::topsort() const {
     }
 
     return res;
-}
+}*/
 
 #endif /* GRAPH_H_ */

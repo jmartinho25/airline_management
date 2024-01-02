@@ -33,28 +33,28 @@ public:
     /**
     * @brief Returns the code of the airline
     * @details Time complexity: O(1)
-    * @return code of the airline
+    * @return Code of the airline
     */
     std::string getCode() const { return code; }
 
     /**
     * @brief Returns the name of the airline
     * @details Time complexity: O(1)
-    * @return name of the airline
+    * @return Name of the airline
     */
     std::string getName() const { return name; }
 
     /**
     * @brief Returns the callsign of the airline
     * @details Time complexity: O(1)
-    * @return callsign of the airline
+    * @return Callsign of the airline
     */
     std::string getCallsign() const { return callsign; }
 
     /**
     * @brief Returns the country of the airline
     * @details Time complexity: O(1)
-    * @return country of the airline
+    * @return Country of the airline
     */
     std::string getCountry() const { return country; }
 

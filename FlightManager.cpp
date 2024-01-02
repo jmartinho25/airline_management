@@ -13,26 +13,46 @@
 #include <algorithm>
 #include <climits>
 #include <limits>
-
+/**
+    * @brief Constructor of the FlightManager class.
+    */
 FlightManager::FlightManager() {
-    ;
 }
 
+/**
+    * @brief Function responsible for loading airports from a file
+    * @details Time complexity: O(n) where n is the number of lines in the file
+    * @param filename File from which the airports will be loaded
+    */
 void FlightManager::loadAirports(const std::string &filename) {
     Parsing parsing;
     parsing.parseAirports(filename, airportsGraph);
 }
 
+/**
+    * @brief Function responsible for loading airlines from a file
+    * @details Time complexity: O(n) where n is the number of lines in the file
+    * @param filename File from which the airlines will be loaded
+    */
 void FlightManager::loadAirlines(const std::string &filename) {
     Parsing parsing;
     parsing.parseAirlines(filename, airportsGraph);
 }
 
+/**
+    * @brief Function responsible for loading flights from a file
+    * @details Time complexity: O(n) where n is the number of lines in the file
+    * @param filename File from which the flights will be loaded
+    */
 void FlightManager::loadFlights(const std::string &filename) {
     Parsing parsing;
     parsing.parseFlights(filename, airportsGraph);
 }
 
+/**
+ * @brief Prints the total number of airports and flights in the used graph (airportsGraph).
+ * @details Time complexity: O(V + E), where V is the number of vertices, and E is the number of edges.
+ */
 void FlightManager::listnrairportsflights() {
     int totalAirports = airportsGraph.getGraph().getNumVertex();
     int totalFlights = 0;
@@ -45,6 +65,10 @@ void FlightManager::listnrairportsflights() {
 
 }
 
+/**
+ * @brief Function counts the total number of flights and the number of airlines operating from the specified airport and prints it.
+ * @details Time complexity: O(V + E), where V is the number of vertices, and E is the number of edges.
+ */
 void FlightManager::listflightsfromairport() {
     std::string airportCode;
     std::cout << "Enter airport code: ";
@@ -64,7 +88,13 @@ void FlightManager::listflightsfromairport() {
     }
 }
 
-
+/**
+ * @brief The function takes an airline code and an instance of the AirportsGraph class, then iterates through the airlines in the graph to find the matching airline.
+ * @details Time complexity: O(A), where A is the number of airlines in the graph.
+ * @param airlineCode Code of the airline
+ * @param airportsGraph Graph used in the search of the airline
+ * @return Name of the airline matching with the given airlineCode
+ */
 std::string getAirlineName(const std::string &airlineCode, const AirportsGraph &airportsGraph) {
     for (const auto &airline: airportsGraph.getAirlines()) {
         if (airline.getCode() == airlineCode) {
@@ -74,6 +104,10 @@ std::string getAirlineName(const std::string &airlineCode, const AirportsGraph &
     return "Unknown";
 }
 
+/**
+ * @brief Function counts the total number of flights for each airline in each city and prints it.
+ * @details Time complexity: O(V + E), where V is the number of vertices, and E is the number of edges.
+ */
 void FlightManager::listflightspercityperairline() {
     std::map<std::pair<std::string, std::string>, int> flightsPerCityAirline;
 
@@ -98,6 +132,10 @@ void FlightManager::listflightspercityperairline() {
     }
 }
 
+/**
+ * @brief Function counts the number of different countries flown to from the specified city and prints the result.
+ * @details Time complexity: O(V + E), where V is the number of vertices, and E is the number of edges.
+ */
 void FlightManager::listdiffcountriesperairpercity() {
     std::unordered_set<std::string> countriesFlownTo;
     std::string city;
@@ -120,6 +158,14 @@ void FlightManager::listdiffcountriesperairpercity() {
         std::cout << "Number of different countries flown to from " << city << ": " << numCountries << std::endl;
     }
 }
+
+/**
+ * @brief Function performs a depth-first search (DFS) visit on a given vertex in the airportsGraph
+ * @param airports Container in which the information about the visited airport will be inserted
+ * @param cities Container in which the information about the visited city will be inserted
+ * @param countries Container in which the information about the visited country will be inserted
+ * @details Time complexity: O(V + E), where V is the number of vertices, and E is the number of edges.
+ */
 void FlightManager::dfsVisit(Vertex<Airport> *pVertex, unordered_set<std::string> &airports, unordered_set<std::string> &cities,
                              unordered_set<std::string> &countries) {
     pVertex->setVisited(true);
@@ -131,11 +177,12 @@ void FlightManager::dfsVisit(Vertex<Airport> *pVertex, unordered_set<std::string
             dfsVisit(flight.getDest(),airports,cities,countries);
         }
     }
-
-
-
 }
 
+/**
+ * @brief Function performs a depth-first search (DFS) traversal to count the number of available airports, cities, and countries reachable from the specified airport and prints it.
+ * @details Time complexity: O(V + E), where V is the number of vertices, and E is the number of edges.
+ */
 void FlightManager::listnrdestavailable() {
 
     cout << "Enter the airport code: ";
@@ -173,6 +220,13 @@ for(auto &flight:sourceVertex->getAdj()){
     }
 }
 
+/**
+ * @brief Function performs a breadth-first search (BFS) traversal starting from the specified airport, counting the reachable destinations based on the criteria, and prints the result.
+ * @details Time complexity: O(V + E), where V is the number of vertices, and E is the number of edges.
+ * @param airportCode Code of the source airport
+ * @param maxStops Number of maximum stops in the path
+ * @param criteria Criteria for the result (1 is the number of airports, 2 is the number of cities and 3 is the number of countries)
+ */
 void FlightManager::listReachableDestinations(const std::string &airportCode, int maxStops, int criteria) {
     Vertex<Airport> *startVertex = airportsGraph.getGraph().findVertex(Airport(airportCode, "", "", "", 0.0, 0.0));
     if (!startVertex) {
@@ -225,7 +279,10 @@ void FlightManager::listReachableDestinations(const std::string &airportCode, in
     std::cout << "Number of reachable destinations: " << resultCount << std::endl;
 }
 
-
+/**
+ * @brief Function iterates over all vertices in the graph, performs a breadth-first search (BFS) from each vertex to calculate the maximum number of stops, and then keeps track of the airport pairs that achieve this maximum. Finally, it prints the result.
+ * @details Time complexity: O(V^2 + VE), where V is the number of vertices and E is the number of edges in the graph.
+ */
 void FlightManager::listmaxstopsbetweenairports() {
     int maxStops = 0;
     std::vector<std::pair<std::string, std::string>> maxTripAirports;
@@ -247,6 +304,13 @@ void FlightManager::listmaxstopsbetweenairports() {
     }
 }
 
+/**
+ * @brief Function calculates the maximum number of stops for trips starting from a specified source airport using a breadth-first search (BFS) approach, keeping track of the airport pairs that achieve this maximum number of stops in the vector 'aux'.
+ * @details Time complexity: O(V + E), where V is the number of vertices, and E is the number of edges.
+ * @param source Source Airport
+ * @param aux Vector in which the airport pairs that achieve this maximum number of stops will be inserted in
+ * @return Maximum number of stops achieved during BFS
+ */
 int FlightManager::calculateStopsBFS(Vertex<Airport> *source, std::vector<std::pair<std::string, std::string>> &aux) {
     int maxdistance = 0;
     for (auto *vertex: airportsGraph.getGraph().getVertexSet()) {
@@ -280,10 +344,21 @@ int FlightManager::calculateStopsBFS(Vertex<Airport> *source, std::vector<std::p
     return maxdistance;
 }
 
+/**
+ * @brief Comparison function that will be used in a sort algorithm to sort a collection of std::pair<std::string, int> elements based on the second element of each pair in descending order.
+ * @details Time complexity: O(V + E), where V is the number of vertices, and E is the number of edges.
+ * @param a First pair that will be used in the comparison
+ * @param b Second pair that will be used in the comparison
+ * @return True if the second element of 'a' is greater than the second element of 'b', False otherwise
+ */
 bool compareAirportTraffic(const std::pair<std::string, int> &a, const std::pair<std::string, int> &b) {
     return a.second > b.second;
 }
 
+/**
+ * @brief Function identifies and displays the top k airports based on their traffic capacity. Traffic capacity is calculated as the sum of the in-degree and out-degree of each airport in the graph.
+ * @details Time complexity: O(V log V), where V is the number of vertices in the graph.
+ */
 void FlightManager::identifytopkairport() {
     int k;
     std::cout << "Enter the number of airports to display: ";
@@ -303,6 +378,41 @@ void FlightManager::identifytopkairport() {
     }
 }
 
+/**
+ * @brief Function implements a depth-first search (DFS) algorithm to find articulation points in an undirected graph.
+ * @details Time complexity: O(V + E), where V is the number of vertices and E is the number of edges in the graph.
+ * @param v Start vertex of the search
+ * @param essentialAirports Container in which the codes of the airports that are articulation points will be inserted in
+ * @param index Represents the order in which vertices are visited during the DFS
+ */
+void FlightManager::dfs_artic(Vertex<Airport> *v, unordered_set<string>& essentialAirports, unsigned int index) const {
+    int children = 0;
+    v->setNum(index);
+    v->setLow(index);
+    index++;
+    v->setProcessing(true);
+    v->setVisited(true);
+
+    for (const Edge<Airport>& e : v->getAdj()) {
+        Vertex<Airport>* w = e.getDest();
+        if (!w->isVisited()) {
+            children++;
+            dfs_artic(w, essentialAirports, index);
+            if (v->getLow() > w->getLow()) v->setLow(w->getLow());
+            if (w->getLow() >= v->getNum() and v->getNum() != 1) essentialAirports.insert(v->getInfo().getCode());
+            if (v->getNum() == 1 and children > 1) essentialAirports.insert(v->getInfo().getCode());
+        } else if (w->isProcessing()) {
+            if (v->getLow() > w->getNum()) v->setLow(w->getNum());
+        }
+    }
+
+    v->setProcessing(false);
+}
+
+/**
+ * @brief Function uses a combination of DFS traversal and the identification of articulation points to find essential airports in a graph. Essential airports are identified by removing each edge in the graph and checking if the removal increases the number of connected components. Finally, it prints the essential airports.
+ * @details Time complexity: O(V + E), where V is the number of vertices and E is the number of edges in the graph.
+ */
 void FlightManager::findEssentialAirports() {
 
     unsigned int index = 1;
@@ -341,11 +451,12 @@ void FlightManager::findEssentialAirports() {
 
 }
 
-
-
-
-
-
+/**
+ * @brief Function searches for a vertex in the graph based on the airport´s name.
+ * @details Time complexity: O(V + E), where V is the number of vertices and E is the number of edges in the graph.
+ * @param airportName Name of the airport
+ * @return The corresponding vertex if a match is found, nullptr otherwise.
+ */
 Vertex<Airport>* FlightManager::findAirportVertexByName(string airportName) {
 for (const auto &vertex : airportsGraph.getGraph().getVertexSet()) {
     const Airport &airport = vertex->getInfo();
@@ -355,8 +466,121 @@ for (const auto &vertex : airportsGraph.getGraph().getVertexSet()) {
     return nullptr;
 }
 
+/**
+ * @brief Function finds the nearest airport (or airports in case of a tie) to a given set of coordinates (latitude and longitude).
+ * @details Time complexity: O(V), where V is the number of vertices in the graph.
+ * @param lat Latitude of the airport
+ * @param lon Longitude of the airport
+ * @return Vector containing the nearest airport(s)
+ */
+std::vector<Vertex<Airport>*> FlightManager::findNearestAirportToCoordinates(double lat, double lon) {
+    std::vector<Vertex<Airport>*> nearestAirports ;
+    double minDistance = std::numeric_limits<double>::max();
+
+    for (auto& airportVertex : airportsGraph.getGraph().getVertexSet()) {
+        double distance = haversineDistance(lat, lon,
+                                            airportVertex->getInfo().getLatitude(),
+                                            airportVertex->getInfo().getLongitude());
+        if (distance < minDistance) {
+            minDistance = distance;
+            nearestAirports={airportVertex};
+        }else if(distance==minDistance){
+            nearestAirports.push_back(airportVertex);
+        }
+    }
+
+    return nearestAirports;
+}
+
+/**
+ * @brief Function finds the airport vertices located in a specified city.
+ * @details Time complexity: O(V), where V is the number of vertices in the graph.
+ * @param cityName Name of the city
+ * @return Vector containing airport vertices in the specified city
+ */
+std::vector<Vertex<Airport>*> FlightManager::findAirportsInCity(const std::string& cityName) {
+    std::vector<Vertex<Airport>*> cityAirports;
+    for (auto& vertex : airportsGraph.getGraph().getVertexSet()) {
+        if (vertex->getInfo().getCity() == cityName) {
+            cityAirports.push_back(vertex);
+        }
+    }
+    return cityAirports;
+}
+
+/**
+ * @brief Function searches for a vertex in the graph based on the airport´s name or code.
+ * @details Time complexity: O(V), where V is the number of vertices in the graph.
+ * @param airportIdentifier Name or Code of the airport
+ * @return The corresponding vertex if a match is found, nullptr otherwise.
+ */
+Vertex<Airport>* FlightManager::findAirportVertexByNameOrCode(const std::string& airportIdentifier) {
+    if (airportIdentifier.size() > 3) {
+        return findAirportVertexByName(airportIdentifier);
+    } else if (airportIdentifier.size() == 3) {
+        return airportsGraph.getGraph().findVertex(Airport(airportIdentifier, "", "", "", 0.0, 0.0));
+    }
+    return nullptr;
+}
+
+/**
+ * @brief Function finds all shortest paths from a specified start airport to a specified end airport.
+ * @details Time complexity: O((V+E)log V), where V is the number of vertices in the graph and E is the number of edges. This time complexity comes from the use of Dijkstra's algorithm with a priority queue.
+ * @param startAirport Airport where the paths start
+ * @param endAirport Airport where the paths must end
+ * @return Vector of vectors, where each inner vector represents a unique shortest path from the start airport to the end airport.
+ */
+std::vector<std::vector<Vertex<Airport>*>> FlightManager::shortestPaths(Vertex<Airport>* startAirport,Vertex<Airport>* endAirport) {
+    std::priority_queue<std::pair<int, std::vector<Vertex<Airport>*>>, std::vector<std::pair<int, std::vector<Vertex<Airport>*>>>, std::greater<>> pq;
+
+    std::unordered_map<Vertex<Airport>*, int> distance;
+
+    distance[startAirport] = 0;
+
+    pq.push({0, {startAirport}});
+
+    std::set<std::vector<Vertex<Airport>*>> uniquePaths;
+
+    while (!pq.empty()) {
+        auto current = pq.top();
+        pq.pop();
+
+        int currentDistance = current.first;
+        auto currentPath = current.second;
+        auto currentNode = currentPath.back();
+
+        if (currentNode == endAirport) {
+            uniquePaths.insert(currentPath);
+        }
+
+        for (const auto& flight : currentNode->getAdj()) {
+            auto neighbor = flight.getDest();
+
+            int newDistance = currentDistance + 1;
+
+            if (distance.find(neighbor) == distance.end() || newDistance < distance[neighbor]) {
+                distance[neighbor] = newDistance;
+                std::vector<Vertex<Airport>*> newPath = currentPath;
+                newPath.push_back(neighbor);
+                pq.push({newDistance, newPath});
+            } else if (newDistance == distance[neighbor]) {
+                std::vector<Vertex<Airport>*> newPath = currentPath;
+                newPath.push_back(neighbor);
+                pq.push({newDistance, newPath});
+            }
+        }
+    }
+
+    return std::vector<std::vector<Vertex<Airport>*>>(uniquePaths.begin(), uniquePaths.end());
+}
 //BEST FLIGHT PATHS FUNCTIONS
 
+/**
+ * @brief Function finds and displays the best flight options (shortest paths) between two airports using the 'shortestPaths' function
+ * @details Time complexity: O((V+E)log V), where V is the number of vertices (airports) in the graph and E is the number of edges (flights).
+ * @param airportCode1 Airport where the paths start
+ * @param airportCode2 Airport where the paths must end
+ */
 void FlightManager::bfoairporttoairport(const string& airportCode1, const string& airportCode2) {
     auto sourceVertex = findAirportVertexByNameOrCode(airportCode1);
     auto targetVertex = findAirportVertexByNameOrCode(airportCode2);
@@ -387,7 +611,12 @@ void FlightManager::bfoairporttoairport(const string& airportCode1, const string
     }
 }
 
-
+/**
+ * @brief Function finds and displays the best flight options (shortest paths) from a given source airport to any airport in a specified city.
+ * @details Time complexity: O((V+E)log V), where V is the number of vertices (airports) in the graph and E is the number of edges (flights).
+ * @param airport Airport where the paths start
+ * @param cityName City in which the paths must end
+ */
 void FlightManager::bfoairporttocity(const string& airport, const string& cityName) {
     auto sourceAirport = findAirportVertexByNameOrCode(airport);
     if (!sourceAirport) {
@@ -430,27 +659,13 @@ void FlightManager::bfoairporttocity(const string& airport, const string& cityNa
     }
 }
 
-
-
-std::vector<Vertex<Airport>*> FlightManager::findNearestAirportToCoordinates(double lat, double lon) {
-    std::vector<Vertex<Airport>*> nearestAirports ;
-    double minDistance = std::numeric_limits<double>::max();
-
-    for (auto& airportVertex : airportsGraph.getGraph().getVertexSet()) {
-        double distance = haversineDistance(lat, lon,
-                                            airportVertex->getInfo().getLatitude(),
-                                            airportVertex->getInfo().getLongitude());
-        if (distance < minDistance) {
-            minDistance = distance;
-            nearestAirports={airportVertex};
-        }else if(distance==minDistance){
-            nearestAirports.push_back(airportVertex);
-        }
-    }
-
-    return nearestAirports;
-}
-
+/**
+ * @brief Function finds and displays the best flight options (shortest paths) from a given source airport to the nearest airport(s) to specified coordinates (latitude and longitude).
+ * @details Time complexity: O((V+E)log V), where V is the number of vertices (airports) in the graph and E is the number of edges (flights).
+ * @param airportCode Airport where the paths start
+ * @param lat Latitude of the pair of coordinates
+ * @param lon Longitude of the pair of coordinates
+ */
 void FlightManager::bfoairporttocoordinates(const std::string& airportCode, double lat, double lon) {
     auto sourceAirport=findAirportVertexByNameOrCode(airportCode);
 
@@ -487,20 +702,14 @@ void FlightManager::bfoairporttocoordinates(const std::string& airportCode, doub
             }
         }
     }
-
-
 }
 
-std::vector<Vertex<Airport>*> FlightManager::findAirportsInCity(const std::string& cityName) {
-    std::vector<Vertex<Airport>*> cityAirports;
-    for (auto& vertex : airportsGraph.getGraph().getVertexSet()) {
-        if (vertex->getInfo().getCity() == cityName) {
-            cityAirports.push_back(vertex);
-        }
-    }
-    return cityAirports;
-}
-
+/**
+ * @brief Function finds and displays the best flight options (shortest paths) from any airport in a specified city to a given destination airport.
+ * @details Time complexity: O((V+E)log V), where V is the number of vertices (airports) in the graph and E is the number of edges (flights).
+ * @param cityName City in which the paths start
+ * @param airportCode Airport where the paths must end
+ */
 void FlightManager::bfocitytoairport(const string& cityName, const string& airportCode) {
     auto cityAirports = findAirportsInCity(cityName);
     if (cityAirports.empty()) {
@@ -543,14 +752,6 @@ void FlightManager::bfocitytoairport(const string& cityName, const string& airpo
     }
 }
 
-Vertex<Airport>* FlightManager::findAirportVertexByNameOrCode(const std::string& airportIdentifier) {
-    if (airportIdentifier.size() > 3) {
-        return findAirportVertexByName(airportIdentifier);
-    } else if (airportIdentifier.size() == 3) {
-        return airportsGraph.getGraph().findVertex(Airport(airportIdentifier, "", "", "", 0.0, 0.0));
-    }
-    return nullptr;
-}
 
 /*std::pair<int, std::vector<Airport>> FlightManager::findBestFlightPath(Vertex<Airport>* sourceVertex, Vertex<Airport>* destVertex) {
     std::unordered_map<Vertex<Airport>*, std::pair<int, std::vector<Airport>>> paths;
@@ -580,61 +781,12 @@ Vertex<Airport>* FlightManager::findAirportVertexByNameOrCode(const std::string&
     return {std::numeric_limits<int>::max(), std::vector<Airport>()};
 }*/
 
-std::vector<std::vector<Vertex<Airport>*>> FlightManager::shortestPaths(Vertex<Airport>* startAirport,Vertex<Airport>* endAirport) {
-    // Priority queue to explore paths in increasing order of length
-    std::priority_queue<std::pair<int, std::vector<Vertex<Airport>*>>, std::vector<std::pair<int, std::vector<Vertex<Airport>*>>>, std::greater<>> pq;
-
-    // Map to store the shortest distances to each airport
-    std::unordered_map<Vertex<Airport>*, int> distance;
-
-    // Initialize the distance map
-    distance[startAirport] = 0;
-
-    // Push the start airport onto the priority queue
-    pq.push({0, {startAirport}});
-
-    // Set to store unique paths
-    std::set<std::vector<Vertex<Airport>*>> uniquePaths;
-
-    while (!pq.empty()) {
-        auto current = pq.top();
-        pq.pop();
-
-        int currentDistance = current.first;
-        auto currentPath = current.second;
-        auto currentNode = currentPath.back();
-
-        // If we reached the end airport, add the path to the set of unique paths
-        if (currentNode == endAirport) {
-            uniquePaths.insert(currentPath);
-        }
-
-
-        // Explore neighboring airports
-        for (const auto& flight : currentNode->getAdj()) {
-            auto neighbor = flight.getDest();
-
-            int newDistance = currentDistance + 1;  // Assuming all flights have the same weight
-
-            // If the new path is shorter or the distance hasn't been calculated yet
-            if (distance.find(neighbor) == distance.end() || newDistance < distance[neighbor]) {
-                distance[neighbor] = newDistance;
-                std::vector<Vertex<Airport>*> newPath = currentPath;
-                newPath.push_back(neighbor);
-                pq.push({newDistance, newPath});
-            } else if (newDistance == distance[neighbor]) {
-                // If the new path has the same distance as the known shortest path
-                std::vector<Vertex<Airport>*> newPath = currentPath;
-                newPath.push_back(neighbor);
-                pq.push({newDistance, newPath});
-            }
-        }
-    }
-
-    // Convert the set of unique paths to a vector and return
-    return std::vector<std::vector<Vertex<Airport>*>>(uniquePaths.begin(), uniquePaths.end());
-}
-
+/**
+ * @brief Function finds and displays the best flight options (shortest paths) between any airport in the source city and any airport in the destination city.
+ * @details Time complexity: O((V+E)log V), where V is the number of vertices (airports) in the graph and E is the number of edges (flights).
+ * @param sourceCity City in which the paths start
+ * @param destCity City in which the paths must end
+ */
 void FlightManager::bfocitytocity(const string& sourceCity, const string& destCity) {
     auto sourceAirports = findAirportsInCity(sourceCity);
     auto destAirports = findAirportsInCity(destCity);
@@ -677,6 +829,13 @@ void FlightManager::bfocitytocity(const string& sourceCity, const string& destCi
     }
 }
 
+/**
+ * @brief Function finds and displays the best flight options (shortest paths) between any airport in the specified city and the nearest airport(s) to the given coordinates.
+ * @details Time complexity: O((V+E)log V), where V is the number of vertices (airports) in the graph and E is the number of edges (flights).
+ * @param cityName City in which the paths start
+ * @param lat Latitude of the pair of coordinates
+ * @param lon Longitude of the pair of coordinates
+ */
 void FlightManager::bfocitytocoordinates(const string& cityName, double lat, double lon) {
     auto cityAirports = findAirportsInCity(cityName);
     if (cityAirports.empty()) {
@@ -722,6 +881,13 @@ void FlightManager::bfocitytocoordinates(const string& cityName, double lat, dou
     }
 }
 
+/**
+ * @brief Function finds and displays the best flight options (shortest paths) between the nearest airport(s) to the given coordinates and a specified  airport .
+ * @details Time complexity: O((V+E)log V), where V is the number of vertices (airports) in the graph and E is the number of edges (flights).
+ * @param lat Latitude of the pair of coordinates
+ * @param lon Longitude of the pair of coordinates
+ * @param airportCode Airport in which the paths must end
+ */
 void FlightManager::bfoCoordinatestoAirport(double lat, double lon, const string& airportCode) {
     std::vector<Vertex<Airport>*> nearestAirports = findNearestAirportToCoordinates(lat, lon);
     if (nearestAirports.empty()) {
@@ -770,6 +936,13 @@ void FlightManager::bfoCoordinatestoAirport(double lat, double lon, const string
     }
 }
 
+/**
+ * @brief Function finds and displays the best flight options (shortest paths) between the nearest airport(s) to the given coordinates and any airport in a specified city.
+ * @details Time complexity: O((V+E)log V), where V is the number of vertices (airports) in the graph and E is the number of edges (flights).
+ * @param lat Latitude of the pair of coordinates
+ * @param lon Longitude of the pair of coordinates
+ * @param cityName City in which the paths must end
+ */
 void FlightManager::bfoCoordinatestoCity(double lat, double lon, const std::string& cityName) {
     std::vector<Vertex<Airport>*> nearestAirports = findNearestAirportToCoordinates(lat, lon);
     if (nearestAirports.empty()) {
@@ -816,6 +989,14 @@ void FlightManager::bfoCoordinatestoCity(double lat, double lon, const std::stri
     }
 }
 
+/**
+ * @brief Function finds and displays the best flight options (shortest paths) between the nearest airport(s) to the given source coordinates and the nearest airport(s) to the given destination coordinates.
+ * @details Time complexity: O((V+E)log V), where V is the number of vertices (airports) in the graph and E is the number of edges (flights).
+ * @param sourceLat Latitude of the pair of source coordinates
+ * @param sourceLon Longitude of the pair of source coordinates
+ * @param destLat Latitude of the pair of source coordinates
+ * @param destLon Longitude of the pair of source coordinates
+ */
 void FlightManager::bfoCoordinatestoCoordinates(double sourceLat, double sourceLon, double destLat, double destLon) {
     std::vector<Vertex<Airport> *> sourceNearestAirports = findNearestAirportToCoordinates(sourceLat, sourceLon);
     if (sourceNearestAirports.empty()) {
@@ -914,22 +1095,25 @@ std::pair<int, std::vector<Airport>> FlightManager::findBestFlightPathPAirline(
     return {std::numeric_limits<int>::max(), std::vector<Airport>()};
 }
 
+/**
+ * @brief Function finds all shortest paths from a specified start airport to a specified end airport that use exclusively the specified airline.
+ * @details Time complexity: O((V+E)log V), where V is the number of vertices in the graph and E is the number of edges. This time complexity comes from the use of Dijkstra's algorithm with a priority queue.
+ * @param startAirport Airport where the paths start
+ * @param endAirport Airport where the paths must end
+ * @param airlineCode Code of the airline used in the path(s)
+ * @return Vector of vectors, where each inner vector represents a unique shortest path from the start airport to the end airport.
+ */
 std::vector<std::vector<Vertex<Airport>*>> FlightManager::shortestPathsPAirline(
         Vertex<Airport>* startAirport, Vertex<Airport>* endAirport, const std::string& airlineCode) {
 
-    // Priority queue to explore paths in increasing order of length
     std::priority_queue<std::pair<int, std::vector<Vertex<Airport>*>>, std::vector<std::pair<int, std::vector<Vertex<Airport>*>>>, std::greater<>> pq;
 
-    // Map to store the shortest distances to each airport
     std::unordered_map<Vertex<Airport>*, int> distance;
 
-    // Initialize the distance map
     distance[startAirport] = 0;
 
-    // Push the start airport onto the priority queue
     pq.push({0, {startAirport}});
 
-    // Set to store unique paths
     std::set<std::vector<Vertex<Airport>*>> uniquePaths;
 
     while (!pq.empty()) {
@@ -940,26 +1124,21 @@ std::vector<std::vector<Vertex<Airport>*>> FlightManager::shortestPathsPAirline(
         auto currentPath = current.second;
         auto currentNode = currentPath.back();
 
-        // If we reached the end airport, add the path to the set of unique paths
         if (currentNode == endAirport) {
             uniquePaths.insert(currentPath);
         }
 
-
-        // Explore neighboring airports
         for (const auto& flight : currentNode->getAdj()) {
             auto neighbor = flight.getDest();
 
-            int newDistance = currentDistance + 1;  // Assuming all flights have the same weight
+            int newDistance = currentDistance + 1;
 
-            // If the new path is shorter or the distance hasn't been calculated yet
             if (flight.getAirlineCode()==airlineCode&&(distance.find(neighbor) == distance.end() || newDistance < distance[neighbor])) {
                 distance[neighbor] = newDistance;
                 std::vector<Vertex<Airport>*> newPath = currentPath;
                 newPath.push_back(neighbor);
                 pq.push({newDistance, newPath});
             } else if (flight.getAirlineCode()==airlineCode&&newDistance == distance[neighbor]) {
-                // If the new path has the same distance as the known shortest path
                 std::vector<Vertex<Airport>*> newPath = currentPath;
                 newPath.push_back(neighbor);
                 pq.push({newDistance, newPath});
@@ -967,12 +1146,16 @@ std::vector<std::vector<Vertex<Airport>*>> FlightManager::shortestPathsPAirline(
         }
     }
 
-    // Convert the set of unique paths to a vector and return
     return std::vector<std::vector<Vertex<Airport>*>>(uniquePaths.begin(), uniquePaths.end());
 }
 
-
-
+/**
+ * @brief Function finds and displays the best flight options (shortest paths) between two airports that use exclusively the specified airline.
+ * @details Time complexity: O((V+E)log V), where V is the number of vertices (airports) in the graph and E is the number of edges (flights).
+ * @param airportCode1 Airport where the paths start
+ * @param airportCode2 Airport where the paths must end
+ * @param airlineCode Code of the airline used in the path(s)
+ */
 void FlightManager::bfoairporttoairportPAirline(const string& airportCode1, const string& airportCode2, const std::string& airlineCode) {
     auto sourceVertex = findAirportVertexByNameOrCode(airportCode1);
     auto targetVertex = findAirportVertexByNameOrCode(airportCode2);
@@ -1005,6 +1188,13 @@ void FlightManager::bfoairporttoairportPAirline(const string& airportCode1, cons
     }
 }
 
+/**
+ * @brief Function finds and displays the best flight options (shortest paths) from a given source airport to any airport in a specified city that use exclusively the specified airline.
+ * @details Time complexity: O((V+E)log V), where V is the number of vertices (airports) in the graph and E is the number of edges (flights).
+ * @param airport Airport where the paths start
+ * @param cityName City in which the paths must end
+ * @param airlineCode Code of the airline used in the path(s)
+ */
 void FlightManager::bfoairporttocityPAirline(const string& airport, const string& cityName, const std::string& airlineCode) {
     auto sourceAirport = findAirportVertexByNameOrCode(airport);
     if (!sourceAirport) {
@@ -1047,6 +1237,14 @@ void FlightManager::bfoairporttocityPAirline(const string& airport, const string
     }
 }
 
+/**
+ * @brief Function finds and displays the best flight options (shortest paths) from a given source airport to the nearest airport(s) to specified coordinates (latitude and longitude) that use exclusively the specified airline.
+ * @details Time complexity: O((V+E)log V), where V is the number of vertices (airports) in the graph and E is the number of edges (flights).
+ * @param airportCode Airport where the paths start
+ * @param lat Latitude of the pair of coordinates
+ * @param lon Longitude of the pair of coordinates
+ * @param airlineCode Code of the airline used in the path(s)
+ */
 void FlightManager::bfoairporttocoordinatesPAirline(const std::string &airportCode, double lat, double lon,
                                                     const std::string &airlineCode) {
     auto sourceAirport=findAirportVertexByNameOrCode(airportCode);
@@ -1088,6 +1286,13 @@ void FlightManager::bfoairporttocoordinatesPAirline(const std::string &airportCo
 
 }
 
+/**
+ * @brief Function finds and displays the best flight options (shortest paths) from any airport in a specified city to a given destination airport that use exclusively the specified airline.
+ * @details Time complexity: O((V+E)log V), where V is the number of vertices (airports) in the graph and E is the number of edges (flights).
+ * @param cityName City in which the paths start
+ * @param airportCode Airport where the paths must end
+ * @param airlineCode Code of the airline used in the path(s)
+ */
 void FlightManager::bfocitytoairportPAirline(const std::string &cityName, const std::string &airportCode,
                                              const std::string &airlineCode) {
     auto cityAirports = findAirportsInCity(cityName);
@@ -1130,6 +1335,13 @@ void FlightManager::bfocitytoairportPAirline(const std::string &cityName, const 
     }
 }
 
+/**
+ * @brief Function finds and displays the best flight options (shortest paths) between any airport in the source city and any airport in the destination city that use exclusively the specified airline.
+ * @details Time complexity: O((V+E)log V), where V is the number of vertices (airports) in the graph and E is the number of edges (flights).
+ * @param sourceCity City in which the paths start
+ * @param destCity City in which the paths must end
+ * @param airlineCode Code of the airline used in the path(s)
+ */
 void FlightManager::bfocitytocityPAirline(const std::string &sourceCity, const std::string &destCity,
                                           const std::string &airlineCode) {
     auto sourceAirports = findAirportsInCity(sourceCity);
@@ -1172,6 +1384,14 @@ void FlightManager::bfocitytocityPAirline(const std::string &sourceCity, const s
     }
 }
 
+/**
+ * @brief Function finds and displays the best flight options (shortest paths) between any airport in the specified city and the nearest airport(s) to the given coordinates that use exclusively the specified airline.
+ * @details Time complexity: O((V+E)log V), where V is the number of vertices (airports) in the graph and E is the number of edges (flights).
+ * @param cityName City in which the paths start
+ * @param lat Latitude of the pair of coordinates
+ * @param lon Longitude of the pair of coordinates
+ * @param airlineCode Code of the airline used in the path(s)
+ */
 void FlightManager::bfocitytocoordenatesPAirline(const std::string &cityName, double lat, double lon,
                                                  const std::string &airlineCode) {
     auto cityAirports = findAirportsInCity(cityName);
@@ -1217,6 +1437,14 @@ void FlightManager::bfocitytocoordenatesPAirline(const std::string &cityName, do
     }
 }
 
+/**
+ * @brief Function finds and displays the best flight options (shortest paths) between the nearest airport(s) to the given coordinates and a specified airport that use exclusively the specified airline.
+ * @details Time complexity: O((V+E)log V), where V is the number of vertices (airports) in the graph and E is the number of edges (flights).
+ * @param lat Latitude of the pair of coordinates
+ * @param lon Longitude of the pair of coordinates
+ * @param airportCode Airport in which the paths must end
+ * @param airlineCode Code of the airline used in the path(s)
+ */
 void FlightManager::bfoCoordinatestoAirportPAirline(double lat, double lon, const std::string &airportCode,
                                                     const std::string &airlineCode) {
     std::vector<Vertex<Airport>*> nearestAirports = findNearestAirportToCoordinates(lat, lon);
@@ -1265,6 +1493,15 @@ void FlightManager::bfoCoordinatestoAirportPAirline(double lat, double lon, cons
         }
     }
 }
+
+/**
+ * @brief Function finds and displays the best flight options (shortest paths) between the nearest airport(s) to the given coordinates and any airport in a specified city that use exclusively the specified airline.
+ * @details Time complexity: O((V+E)log V), where V is the number of vertices (airports) in the graph and E is the number of edges (flights).
+ * @param lat Latitude of the pair of coordinates
+ * @param lon Longitude of the pair of coordinates
+ * @param cityName City in which the paths must end
+ * @param airlineCode Code of the airline used in the path(s)
+ */
 void FlightManager::bfoCoordinatestoCityPAirline(double lat, double lon, const std::string &cityName,
                                                  const std::string &airlineCode) {
     std::vector<Vertex<Airport>*> nearestAirports = findNearestAirportToCoordinates(lat, lon);
@@ -1312,6 +1549,15 @@ void FlightManager::bfoCoordinatestoCityPAirline(double lat, double lon, const s
     }
 }
 
+/**
+ * @brief Function finds and displays the best flight options (shortest paths) between the nearest airport(s) to the given source coordinates and the nearest airport(s) to the given destination coordinates that use exclusively the specified airline.
+ * @details Time complexity: O((V+E)log V), where V is the number of vertices (airports) in the graph and E is the number of edges (flights).
+ * @param sourceLat Latitude of the pair of source coordinates
+ * @param sourceLon Longitude of the pair of source coordinates
+ * @param destLat Latitude of the pair of source coordinates
+ * @param destLon Longitude of the pair of source coordinates
+ * @param airlineCode Code of the airline used in the path(s)
+ */
 void FlightManager::bfoCoordinatestoCoordinatesPAirline(double sourceLat, double sourceLon, double destLat,
                                                         double destLon, const std::string &airlineCode) {
     std::vector<Vertex<Airport> *> sourceNearestAirports = findNearestAirportToCoordinates(sourceLat, sourceLon);
@@ -1368,28 +1614,4 @@ void FlightManager::bfoCoordinatestoCoordinatesPAirline(double sourceLat, double
         }
     }
 
-}
-
-void FlightManager::dfs_artic(Vertex<Airport> *v, unordered_set<string>& essentialAirports, unsigned int index) const {
-    int children = 0;
-    v->setNum(index);
-    v->setLow(index);
-    index++;
-    v->setProcessing(true);
-    v->setVisited(true);
-
-    for (const Edge<Airport>& e : v->getAdj()) {
-        Vertex<Airport>* w = e.getDest();
-        if (!w->isVisited()) {
-            children++;
-            dfs_artic(w, essentialAirports, index);
-            if (v->getLow() > w->getLow()) v->setLow(w->getLow());
-            if (w->getLow() >= v->getNum() and v->getNum() != 1) essentialAirports.insert(v->getInfo().getCode());
-            if (v->getNum() == 1 and children > 1) essentialAirports.insert(v->getInfo().getCode());
-        } else if (w->isProcessing()) {
-            if (v->getLow() > w->getNum()) v->setLow(w->getNum());
-        }
-    }
-
-    v->setProcessing(false);
 }

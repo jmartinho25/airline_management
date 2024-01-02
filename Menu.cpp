@@ -4,7 +4,9 @@
 
 #include "Menu.h"
 #include <iostream>
-
+/**
+    * @brief Main Menu of this program, together with all the calls and conditions that will allow the implementation of all the program´s functionalities
+    */
 void Menu::displayMenu() {
     int choice;
     int filterChoice;

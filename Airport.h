@@ -40,42 +40,42 @@ public:
     /**
     * @brief Returns the code of the airport
     * @details Time complexity: O(1)
-    * @return code of the airport
+    * @return Code of the airport
     */
     std::string getCode() const { return code; }
 
     /**
     * @brief Returns the name of the airport
     * @details Time complexity: O(1)
-    * @return name of the airport
+    * @return Name of the airport
     */
     std::string getName() const { return name; }
 
     /**
     * @brief Returns the city of the airport
     * @details Time complexity: O(1)
-    * @return city of the airport
+    * @return City of the airport
     */
     std::string getCity() const { return city; }
 
     /**
     * @brief Returns the country of the airport
     * @details Time complexity: O(1)
-    * @return country of the airport
+    * @return Country of the airport
     */
     std::string getCountry() const { return country; }
 
     /**
     * @brief Returns the latitude of the airport
     * @details Time complexity: O(1)
-    * @return latitude of the airport
+    * @return Latitude of the airport
     */
     double getLatitude() const { return latitude; }
 
     /**
     * @brief Returns the longitude of the airport
     * @details Time complexity: O(1)
-    * @return longitude of the airport
+    * @return Longitude of the airport
     */
     double getLongitude() const { return longitude; }
 

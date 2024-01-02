@@ -9,7 +9,9 @@
 #include <string>
 #include "Airport.h"
 #include "AirportsGraph.h"
-
+/**
+ * @brief Class that allows the parsing of the files
+ */
 class Parsing {
 public:
 

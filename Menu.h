@@ -8,8 +8,15 @@
 
 #include "FlightManager.h"
 
+/**
+    * @brief Class that includes all the Menus that are displayed in our program
+    */
 class Menu {
 public:
+    /**
+    * @brief  Constructor of the Menu Class
+    * @param system FlightManager object used in the program
+    */
     Menu(FlightManager &system) : managementSystem(system) {};
 
     void displayMenu();

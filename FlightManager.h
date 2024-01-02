@@ -9,7 +9,9 @@
 #include "AirportsGraph.h"
 #include "Utils.h"
 
-
+/**
+ * @brief Class that implements all functionalities in our code
+ */
 class FlightManager {
 private:
     AirportsGraph airportsGraph;
