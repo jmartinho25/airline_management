@@ -28,7 +28,8 @@ bool AirportsGraph::addAirport(const std::string &code, const std::string &name,
 * @param airline Airline of the flight
 * @return True if the addition of the flight is successful, False otherwise
 */
-bool AirportsGraph::addFlight(const std::string &sourceCode, const std::string &targetCode, const std::string &airline) {
+bool
+AirportsGraph::addFlight(const std::string &sourceCode, const std::string &targetCode, const std::string &airline) {
     Vertex<Airport> *sourceVertex = airportsGraph.findVertex(Airport(sourceCode, "", "", "", 0.0, 0.0));
     Vertex<Airport> *targetVertex = airportsGraph.findVertex(Airport(targetCode, "", "", "", 0.0, 0.0));
     targetVertex->increaseInDegree();

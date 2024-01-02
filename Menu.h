@@ -28,8 +28,6 @@ private:
 
     void listflightsfromairport();
 
-    void listflightsfromcity();
-
     void listflightspercityperairline();
 
     void listdiffcountriesperairpercity();
@@ -70,25 +68,47 @@ private:
 
     void handlePreferredAirlineFilter();
 
+    void handleMaxStopsFilter();
+
     //PREFERRED AIRLINE
 
-    void bfoairporttoairportPAirline(std::string& airline);
+    void bfoairporttoairportPAirline(std::string &airline);
 
-    void bfoairporttocityPAirline(std::string& airlineCode);
+    void bfoairporttocityPAirline(std::string &airlineCode);
 
-    void bfoairporttocoordinatesPAirline(std::string& airlineCode);
+    void bfoairporttocoordinatesPAirline(std::string &airlineCode);
 
-    void bfocitytoairportPAirline(std::string& airlineCode);
+    void bfocitytoairportPAirline(std::string &airlineCode);
 
-    void bfocitytocityPAirline(std::string& airlineCode);
+    void bfocitytocityPAirline(std::string &airlineCode);
 
-    void bfocitytocoordinatesPAirline(std::string& airlineCode);
+    void bfocitytocoordinatesPAirline(std::string &airlineCode);
 
-    void bfoCoordinatestoAirportPAirline(std::string& airlineCode);
+    void bfoCoordinatestoAirportPAirline(std::string &airlineCode);
 
-    void bfoCoordinatestoCityPAirline(std::string& airlineCode);
+    void bfoCoordinatestoCityPAirline(std::string &airlineCode);
 
-    void bfoCoordinatestoCoordinatesPAirline(std::string& airlineCode);
+    void bfoCoordinatestoCoordinatesPAirline(std::string &airlineCode);
+
+    //MAX STOPS
+
+    void bfoAirportToAirportMaxStops();
+
+    void bfoAirportToCityMaxStops();
+
+    void bfoAirportToCoordinatesMaxStops();
+
+    void bfoCityToAirportMaxStops();
+
+    void bfoCityToCityMaxStops();
+
+    void bfoCityToCoordinatesMaxStops();
+
+    void bfoCoordinatesToAirportMaxStops();
+
+    void bfoCoordinatesToCityMaxStops();
+
+    void bfoCoordinatesToCoordinatesMaxStops();
 };
 
 

@@ -4,12 +4,12 @@
 
 #include "Menu.h"
 #include <iostream>
+
 /**
     * @brief Main Menu of this program, together with all the calls and conditions that will allow the implementation of all the program´s functionalities
     */
 void Menu::displayMenu() {
     int choice;
-    int filterChoice;
     do {
 
         std::cout << "1. Consult information" << std::endl;
@@ -197,7 +197,7 @@ void Menu::identifytopkairport() {
 
 }
 
-void Menu::findEssentialAirports(){
+void Menu::findEssentialAirports() {
     managementSystem.findEssentialAirports();
 }
 
@@ -213,7 +213,6 @@ void Menu::bfoairporttoairport() {
     std::getline(std::cin, airportCode2);
 
 
-
     managementSystem.bfoairporttoairport(airportCode1, airportCode2);
 }
 
@@ -222,13 +221,9 @@ void Menu::bfoairporttocity() {
     std::cout << "Enter the airport code or name: ";
     std::cin.ignore();
     std::getline(std::cin, airport);
-    std::string  cityName;
+    std::string cityName;
     std::cout << "Enter the city name: ";
-//    std::cin.ignore();
     std::getline(std::cin, cityName);
-
-
-
 
     managementSystem.bfoairporttocity(airport, cityName);
 }
@@ -300,7 +295,7 @@ void Menu::bfoCoordinatestoAirport() {
     std::cin >> lon;
 
     std::cout << "Enter the airport code or name: ";
-    std::cin.ignore();  // Clear the input buffer
+    std::cin.ignore();
     std::getline(std::cin, airportCode);
 
     managementSystem.bfoCoordinatestoAirport(lat, lon, airportCode);
@@ -316,7 +311,7 @@ void Menu::bfoCoordinatestoCity() {
     std::cout << "Enter the longitude: ";
     std::cin >> lon;
 
-    std::cin.ignore(); // Clear the input buffer
+    std::cin.ignore();
     std::cout << "Enter the city name: ";
     std::getline(std::cin, cityName);
 
@@ -345,8 +340,7 @@ void Menu::handleBestFlightOptionWithFilters() {
     int filterChoice;
     std::cout << "Choose a filter:" << std::endl;
     std::cout << "1. Preferred airline" << std::endl;
-    std::cout << "2. Maximum number of airlines" << std::endl;
-    std::cout << "3. Preferred stop location" << std::endl;
+    std::cout << "2. Maximum number of stops" << std::endl;
     std::cout << "Enter your choice: ";
     std::cin >> filterChoice;
 
@@ -355,10 +349,7 @@ void Menu::handleBestFlightOptionWithFilters() {
             handlePreferredAirlineFilter();
             break;
         case 2:
-            //handleMaxNumberOfAirlinesFilter();
-            break;
-        case 3:
-            //handlePreferredStopLocationFilter();
+            handleMaxStopsFilter();
             break;
         default:
             std::cout << "Invalid filter choice. Please try again." << std::endl;
@@ -425,7 +416,7 @@ void Menu::handlePreferredAirlineFilter() {
 
 }
 
-void Menu::bfoairporttoairportPAirline(std::string& airline) {
+void Menu::bfoairporttoairportPAirline(std::string &airline) {
 
     std::string airportCode1;
     std::cout << "Enter the first airport code or name: ";
@@ -433,25 +424,20 @@ void Menu::bfoairporttoairportPAirline(std::string& airline) {
     std::getline(std::cin, airportCode1);
     std::string airportCode2;
     std::cout << "Enter the second airport code or name: ";
-//    std::cin.ignore();
     std::getline(std::cin, airportCode2);
-
 
 
     managementSystem.bfoairporttoairportPAirline(airportCode1, airportCode2, airline);
 }
 
-void Menu::bfoairporttocityPAirline(std::string& airlineCode) {
+void Menu::bfoairporttocityPAirline(std::string &airlineCode) {
     std::string airport;
     std::cout << "Enter the airport code or name: ";
     std::cin.ignore();
     std::getline(std::cin, airport);
-    std::string  cityName;
+    std::string cityName;
     std::cout << "Enter the city name: ";
-//    std::cin.ignore();
     std::getline(std::cin, cityName);
-
-
 
 
     managementSystem.bfoairporttocityPAirline(airport, cityName, airlineCode);
@@ -473,7 +459,7 @@ void Menu::bfoairporttocoordinatesPAirline(std::string &airlineCode) {
     managementSystem.bfoairporttocoordinatesPAirline(airportCode, lat, lon, airlineCode);
 }
 
-void Menu::bfocitytoairportPAirline(std::string &airlineCode)  {
+void Menu::bfocitytoairportPAirline(std::string &airlineCode) {
     std::string cityName, airportCode;
     std::cout << "Enter the city name: ";
     std::cin.ignore();
@@ -523,7 +509,7 @@ void Menu::bfoCoordinatestoAirportPAirline(std::string &airlineCode) {
     std::cin >> lon;
 
     std::cout << "Enter the airport code or name: ";
-    std::cin.ignore();  // Clear the input buffer
+    std::cin.ignore();
     std::getline(std::cin, airportCode);
 
     managementSystem.bfoCoordinatestoAirportPAirline(lat, lon, airportCode, airlineCode);
@@ -539,7 +525,7 @@ void Menu::bfoCoordinatestoCityPAirline(std::string &airlineCode) {
     std::cout << "Enter the longitude: ";
     std::cin >> lon;
 
-    std::cin.ignore(); // Clear the input buffer
+    std::cin.ignore();
     std::cout << "Enter the city name: ";
     std::getline(std::cin, cityName);
 
@@ -559,4 +545,268 @@ void Menu::bfoCoordinatestoCoordinatesPAirline(std::string &airlineCode) {
     std::cin >> destLon;
 
     managementSystem.bfoCoordinatestoCoordinatesPAirline(sourceLat, sourceLon, destLat, destLon, airlineCode);
+}
+
+//MAX STOPS
+
+void Menu::handleMaxStopsFilter() {
+    int choice;
+
+    std::cout << "1. From airport to airport" << std::endl;
+    std::cout << "2. From airport to city" << std::endl;
+    std::cout << "3. From airport to geographic coordinates" << std::endl;
+    std::cout << "4. From city to airport" << std::endl;
+    std::cout << "5. From city to city" << std::endl;
+    std::cout << "6. From city to geographic coordinates" << std::endl;
+    std::cout << "7. From geographic coordinates to airport" << std::endl;
+    std::cout << "8. From geographic coordinates to city" << std::endl;
+    std::cout << "9. From geographic coordinates to geographic coordinates" << std::endl;
+    std::cout << "0. Exit" << std::endl;
+    std::cout << "Enter the criteria you want: ";
+    std::cin >> choice;
+
+    switch (choice) {
+        case 1:
+            bfoAirportToAirportMaxStops();
+            break;
+        case 2:
+            bfoAirportToCityMaxStops();
+            break;
+        case 3:
+            bfoAirportToCoordinatesMaxStops();
+            break;
+        case 4:
+            bfoCityToAirportMaxStops();
+            break;
+        case 5:
+            bfoCityToCityMaxStops();
+            break;
+        case 6:
+            bfoCityToCoordinatesMaxStops();
+            break;
+        case 7:
+            bfoCoordinatesToAirportMaxStops();
+            break;
+        case 8:
+            bfoCoordinatesToCityMaxStops();
+            break;
+        case 9:
+            bfoCoordinatesToCoordinatesMaxStops();
+            break;
+        case 0:
+            std::cout << "Exiting the program." << std::endl;
+            break;
+        default:
+            std::cout << "Invalid choice. Please try again." << std::endl;
+    }
+}
+
+void Menu::bfoAirportToAirportMaxStops() {
+    std::string sourceCode, targetCode;
+    int maxStops;
+
+    std::cout << "Enter the source airport code: ";
+    std::cin.ignore();
+    std::getline(std::cin, sourceCode);
+
+    std::cout << "Enter the target airport code: ";
+    std::getline(std::cin, targetCode);
+
+    std::cout << "Enter the maximum number of stops: ";
+    while (!(std::cin >> maxStops) || maxStops <= 0) {
+        std::cout << "Invalid number of stops. Please enter a non-negative number: ";
+        std::cin.clear();
+    }
+
+    managementSystem.bfoAirportToAirportMaxStops(sourceCode, targetCode, maxStops);
+}
+
+void Menu::bfoAirportToCityMaxStops() {
+    std::string sourceCode, targetCity;
+    int maxStops;
+
+    std::cout << "Enter the source airport code: ";
+    std::cin.ignore();
+    std::getline(std::cin, sourceCode);
+
+    if (sourceCode.empty()) {
+        std::cout << "Source airport code cannot be empty." << std::endl;
+        return;
+    }
+
+    std::cout << "Enter the target city name: ";
+    std::getline(std::cin, targetCity);
+
+    if (targetCity.empty()) {
+        std::cout << "Target city name cannot be empty." << std::endl;
+        return;
+    }
+
+    std::cout << "Enter the maximum number of stops: ";
+    while (!(std::cin >> maxStops) || maxStops <= 0) {
+        std::cout << "Invalid number of stops. Please enter a non-negative number: ";
+        std::cin.clear();
+    }
+
+    managementSystem.bfoAirportToCityMaxStops(sourceCode, targetCity, maxStops);
+}
+
+
+void Menu::bfoAirportToCoordinatesMaxStops() {
+    std::string airportCode;
+    double latitude, longitude;
+    int maxStops;
+
+    std::cout << "Enter the airport code: ";
+    std::cin.ignore();
+    std::getline(std::cin, airportCode);
+
+    std::cout << "Enter the latitude: ";
+    std::cin >> latitude;
+
+    std::cout << "Enter the longitude: ";
+    std::cin >> longitude;
+
+    std::cout << "Enter the maximum number of stops: ";
+    while (!(std::cin >> maxStops) || maxStops <= 0) {
+        std::cout << "Invalid number of stops. Please enter a non-negative number: ";
+        std::cin.clear();
+    }
+
+    managementSystem.bfoAirportToCoordinatesMaxStops(airportCode, latitude, longitude, maxStops);
+}
+
+void Menu::bfoCityToAirportMaxStops() {
+    std::string sourceCity, targetCode;
+    int maxStops;
+
+    std::cout << "Enter the source city name: ";
+    std::cin.ignore();
+    std::getline(std::cin, sourceCity);
+
+    std::cout << "Enter the target airport code: ";
+    std::getline(std::cin, targetCode);
+
+    std::cout << "Enter the maximum number of stops: ";
+    while (!(std::cin >> maxStops) || maxStops <= 0) {
+        std::cout << "Invalid number of stops. Please enter a non-negative number: ";
+        std::cin.clear();
+    }
+
+    managementSystem.bfoCityToAirportMaxStops(sourceCity, targetCode, maxStops);
+}
+
+void Menu::bfoCityToCityMaxStops() {
+    std::string sourceCity, targetCity;
+    int maxStops;
+
+    std::cout << "Enter the source city name: ";
+    std::cin.ignore();
+    std::getline(std::cin, sourceCity);
+
+    std::cout << "Enter the target city name: ";
+    std::getline(std::cin, targetCity);
+
+    std::cout << "Enter the maximum number of stops: ";
+    while (!(std::cin >> maxStops) || maxStops <= 0) {
+        std::cout << "Invalid number of stops. Please enter a non-negative number: ";
+        std::cin.clear();
+    }
+
+    managementSystem.bfoCityToCityMaxStops(sourceCity, targetCity, maxStops);
+}
+
+void Menu::bfoCityToCoordinatesMaxStops() {
+    std::string cityName;
+    double lat, lon;
+    int maxStops;
+
+    std::cout << "Enter the city name: ";
+    std::cin.ignore();
+    std::getline(std::cin, cityName);
+
+    std::cout << "Enter the latitude: ";
+    std::cin >> lat;
+
+    std::cout << "Enter the longitude: ";
+    std::cin >> lon;
+
+    std::cout << "Enter the maximum number of stops: ";
+    while (!(std::cin >> maxStops) || maxStops <= 0) {
+        std::cout << "Invalid number of stops. Please enter a non-negative number: ";
+        std::cin.clear();
+    }
+
+    managementSystem.bfoCityToCoordinatesMaxStops(cityName, lat, lon, maxStops);
+}
+
+void Menu::bfoCoordinatesToAirportMaxStops() {
+    double lat, lon;
+    std::string airportCode;
+    int maxStops;
+
+    std::cout << "Enter the latitude: ";
+    std::cin >> lat;
+
+    std::cout << "Enter the longitude: ";
+    std::cin >> lon;
+
+    std::cout << "Enter the destination airport code: ";
+    std::cin.ignore();
+    std::getline(std::cin, airportCode);
+
+    std::cout << "Enter the maximum number of stops: ";
+    while (!(std::cin >> maxStops) || maxStops <= 0) {
+        std::cout << "Invalid number of stops. Please enter a non-negative number: ";
+        std::cin.clear();
+    }
+
+    managementSystem.bfoCoordinatesToAirportMaxStops(lat, lon, airportCode, maxStops);
+}
+
+void Menu::bfoCoordinatesToCityMaxStops() {
+    double lat, lon;
+    std::string cityName;
+    int maxStops;
+
+    std::cout << "Enter the latitude: ";
+    std::cin >> lat;
+
+    std::cout << "Enter the longitude: ";
+    std::cin >> lon;
+
+    std::cout << "Enter the destination city name: ";
+    std::cin.ignore();
+    std::getline(std::cin, cityName);
+
+    std::cout << "Enter the maximum number of stops: ";
+    while (!(std::cin >> maxStops) || maxStops <= 0) {
+        std::cout << "Invalid number of stops. Please enter a non-negative number: ";
+        std::cin.clear();
+    }
+
+    managementSystem.bfoCoordinatesToCityMaxStops(lat, lon, cityName, maxStops);
+}
+
+void Menu::bfoCoordinatesToCoordinatesMaxStops() {
+    double sourceLat, sourceLon, destLat, destLon;
+    int maxStops;
+
+    std::cout << "Enter source latitude: ";
+    std::cin >> sourceLat;
+    std::cout << "Enter source longitude: ";
+    std::cin >> sourceLon;
+
+    std::cout << "Enter destination latitude: ";
+    std::cin >> destLat;
+    std::cout << "Enter destination longitude: ";
+    std::cin >> destLon;
+
+    std::cout << "Enter the maximum number of stops: ";
+    while (!(std::cin >> maxStops) || maxStops <= 0) {
+        std::cout << "Invalid number of stops. Please enter a non-negative number: ";
+        std::cin.clear();
+    }
+
+    managementSystem.bfoCoordinatesToCoordinatesMaxStops(sourceLat, sourceLon, destLat, destLon, maxStops);
 }

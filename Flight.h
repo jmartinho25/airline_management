@@ -16,31 +16,6 @@ private:
     std::string airlineCode;
 
 public:
-
-    /**
-    * @brief Constructor of the Flight class. SourceAirportCode, targetAirportCode and airlineCode correspond to the given values
-    * @details Time complexity: O(1)
-    * @param sourceAirportCode Code of the source airport of the flight
-    * @param targetAirportCode Code of the destination airport of the flight
-    * @param airlineCode Code of the airline responsible for the flight
-    */
-    Flight(std::string sourceAirportCode, std::string targetAirportCode, std::string airlineCode) : sourceAirportCode(
-            sourceAirportCode), targetAirportCode(targetAirportCode), airlineCode(airlineCode) {}
-
-    /**
-    * @brief Returns the code of the source airport of the flight
-    * @details Time complexity: O(1)
-    * @return code of the source airport of the flight
-    */
-    std::string getSourceAirportCode() const { return sourceAirportCode; }
-
-    /**
-    * @brief Returns the code of the destination airport of the flight
-    * @details Time complexity: O(1)
-    * @return code of the destination airport of the flight
-    */
-    std::string getTargetAirportCode() const { return targetAirportCode; }
-
     /**
     * @brief Returns the code of the airline responsible for the flight
     * @details Time complexity: O(1)

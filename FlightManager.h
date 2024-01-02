@@ -16,24 +16,20 @@ class FlightManager {
 private:
     AirportsGraph airportsGraph;
 
-    std::vector<Vertex<Airport>*> findNearestAirportToCoordinates(double lat, double lon);
+    std::vector<Vertex<Airport> *> findNearestAirportToCoordinates(double lat, double lon);
 
-    vector<Vertex<Airport>*> findAirportsInCity(const std::string& cityName);
+    vector<Vertex<Airport> *> findAirportsInCity(const std::string &cityName);
 
-    Vertex<Airport>* findAirportVertexByNameOrCode(const std::string& airportIdentifier);
+    Vertex<Airport> *findAirportVertexByNameOrCode(const std::string &airportIdentifier);
 
-    std::pair<int, std::vector<Airport>> findBestFlightPath(Vertex<Airport>* sourceVertex, Vertex<Airport>* destVertex);
 
     Vertex<Airport> *findAirportVertexByName(string airportName);
 
-    std::pair<int, std::vector<Airport>> findBestFlightPathPAirline(
-            Vertex<Airport>* sourceVertex, Vertex<Airport>* destVertex, const std::string& airlineCode);
-
-    std::vector<std::vector<Vertex<Airport>*>> shortestPathsPAirline(
-            Vertex<Airport>* startAirport, Vertex<Airport>* endAirport, const std::string& airlineCode);
+    std::vector<std::vector<Vertex<Airport> *>>
+    shortestPathsPAirline(Vertex<Airport> *startAirport, Vertex<Airport> *endAirport, const std::string &airlineCode);
 
 public:
-     FlightManager() ;
+    FlightManager();
 
     void loadAirports(const std::string &filename);
 
@@ -63,9 +59,9 @@ public:
     void identifytopkairport();
 
     void findEssentialAirportsUtil(const std::string &u, std::unordered_map<std::string, int> &disc,
-                                    std::unordered_map<std::string, int> &low,
-                                    std::unordered_map<std::string, std::string> &parent,
-                                    std::unordered_set<std::string> &articulationPoints, int &time);
+                                   std::unordered_map<std::string, int> &low,
+                                   std::unordered_map<std::string, std::string> &parent,
+                                   std::unordered_set<std::string> &articulationPoints, int &time);
 
     void findEssentialAirports();
 
@@ -74,47 +70,80 @@ public:
 
     //Find Best Path Functions
 
-    void bfoairporttoairport(const string& airport1,const string& airport2);
+    void bfoairporttoairport(const string &airport1, const string &airport2);
 
-    void bfoairporttocity(const string& airport,const string& cityName);
+    void bfoairporttocity(const string &airport, const string &cityName);
 
-    void bfocitytoairport(const string& cityname,const string& airport);
+    void bfocitytoairport(const string &cityname, const string &airport);
 
-    void bfoairporttocoordinates(const string& airportCode, double lat, double lon);
+    void bfoairporttocoordinates(const string &airportCode, double lat, double lon);
 
-    void bfocitytocity(const string& sourceCity, const string& destCity);
+    void bfocitytocity(const string &sourceCity, const string &destCity);
 
-    void bfocitytocoordinates(const string& cityName, double lat, double lon);
+    void bfocitytocoordinates(const string &cityName, double lat, double lon);
 
-    void bfoCoordinatestoAirport(double lat, double lon, const string& airportCode);
+    void bfoCoordinatestoAirport(double lat, double lon, const string &airportCode);
 
-    void bfoCoordinatestoCity(double lat, double lon, const std::string& cityName);
+    void bfoCoordinatestoCity(double lat, double lon, const std::string &cityName);
 
     void bfoCoordinatestoCoordinates(double sourceLat, double sourceLon, double destLat, double destLon);
 
-    std::vector<std::vector<Vertex<Airport>*>> shortestPaths(Vertex<Airport>* startAirport,Vertex<Airport>* endAirport);
+    std::vector<std::vector<Vertex<Airport> *>>
+    shortestPaths(Vertex<Airport> *startAirport, Vertex<Airport> *endAirport);
 
     //FILTERS
     //PREFERRED AIRLINE
-    void bfoairporttoairportPAirline(const string& airportCode1, const string& airportCode2, const std::string& airlineCode);
+    void
+    bfoairporttoairportPAirline(const string &airportCode1, const string &airportCode2, const std::string &airlineCode);
 
-    void bfoairporttocityPAirline(const string& airport, const string& cityName, const std::string& airlineCode);
+    void bfoairporttocityPAirline(const string &airport, const string &cityName, const std::string &airlineCode);
 
-    void bfoairporttocoordinatesPAirline(const string& airportCode, double lat, double lon, const std::string& airlineCode);
+    void
+    bfoairporttocoordinatesPAirline(const string &airportCode, double lat, double lon, const std::string &airlineCode);
 
-    void bfocitytoairportPAirline(const string& cityname,const string& airport, const std::string& airlineCode);
+    void bfocitytoairportPAirline(const string &cityname, const string &airport, const std::string &airlineCode);
 
-    void bfocitytocityPAirline(const string& sourceCity, const string& destCity, const std::string& airlineCode);
+    void bfocitytocityPAirline(const string &sourceCity, const string &destCity, const std::string &airlineCode);
 
-    void bfocitytocoordenatesPAirline(const string& sourceCity, double lat, double lon, const std::string& airlineCode);
+    void bfocitytocoordenatesPAirline(const string &sourceCity, double lat, double lon, const std::string &airlineCode);
 
-    void bfoCoordinatestoAirportPAirline(double lat, double lon, const string& airportCode,const std::string& airlineCode );
+    void
+    bfoCoordinatestoAirportPAirline(double lat, double lon, const string &airportCode, const std::string &airlineCode);
 
-    void bfoCoordinatestoCityPAirline(double lat, double lon, const std::string& cityName, const std::string& airlineCode);
+    void
+    bfoCoordinatestoCityPAirline(double lat, double lon, const std::string &cityName, const std::string &airlineCode);
 
-    void bfoCoordinatestoCoordinatesPAirline(double sourceLat, double sourceLon, double destLat, double destLon, const std::string& airlineCode);
+    void bfoCoordinatestoCoordinatesPAirline(double sourceLat, double sourceLon, double destLat, double destLon,
+                                             const std::string &airlineCode);
 
     void dfs_artic(Vertex<Airport> *v, unordered_set<string> &essentialAirports, unsigned int index) const;
+
+    //MAX STOPS
+
+    void bfoAirportToAirportMaxStops(const std::string &sourceCode, const std::string &targetCode, int maxStops);
+
+    std::vector<std::vector<Vertex<Airport> *>>
+    shortestPathsWithMaxStops(Vertex<Airport> *startAirport, Vertex<Airport> *endAirport, int maxStops);
+
+    void bfoAirportToCityMaxStops(const std::string &sourceCode, const std::string &targetCity, int maxStops);
+
+    std::vector<std::vector<Vertex<Airport> *>>
+    shortestPathsToCityWithMaxStops(Vertex<Airport> *startAirport, const std::string &cityName, int maxStops);
+
+    void bfoAirportToCoordinatesMaxStops(const std::string &sourceCode, double lat, double lon, int maxStops);
+
+    void bfoCityToAirportMaxStops(const std::string &sourceCity, const std::string &targetCode, int maxStops);
+
+    void bfoCityToCityMaxStops(const std::string &sourceCity, const std::string &targetCity, int maxStops);
+
+    void bfoCityToCoordinatesMaxStops(const std::string &cityName, double lat, double lon, int maxStops);
+
+    void bfoCoordinatesToAirportMaxStops(double lat, double lon, const std::string &targetAirportCode, int maxStops);
+
+    void bfoCoordinatesToCityMaxStops(double lat, double lon, const std::string &targetCity, int maxStops);
+
+    void bfoCoordinatesToCoordinatesMaxStops(double sourceLat, double sourceLon, double destLat, double destLon,
+                                             int maxStops);
 };
 
 

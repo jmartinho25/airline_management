@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include "Flight.h"
+
 /**
     * @brief Class to store the information about a given Airport
     */

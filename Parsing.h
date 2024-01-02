@@ -1,6 +1,3 @@
-//
-// Created by darksystem on 21-12-2023.
-//
 
 #ifndef PROJECT_2_PARSING_H
 #define PROJECT_2_PARSING_H
@@ -9,6 +6,7 @@
 #include <string>
 #include "Airport.h"
 #include "AirportsGraph.h"
+
 /**
  * @brief Class that allows the parsing of the files
  */

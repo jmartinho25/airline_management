@@ -1,6 +1,4 @@
-//
-// Created by darksystem on 21-12-2023.
-//
+
 #include "Parsing.h"
 #include "Graph.h"
 #include "Airport.h"
