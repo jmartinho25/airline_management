@@ -43,8 +43,6 @@ public:
 
     void listflightsfromairport();
 
-    void listflightsfromcity();
-
     void listflightspercityperairline();
 
     void listdiffcountriesperairpercity();
@@ -146,29 +144,34 @@ public:
     void bfoCoordinatesToCoordinatesMaxStops(double sourceLat, double sourceLon, double destLat, double destLon,
                                              int maxStops);
 
-    void bfoAirportToAirportMaxDistance(const std::string& sourceCode, const std::string& targetCode, int maxDistance);
+    //MAX DISTANCE
 
-    std::vector<std::pair<std::vector<Vertex<Airport>*>, int>> shortestPathsWithinDistance(
-            Vertex<Airport>* startAirport, Vertex<Airport>* endAirport, int maxDistance);
+    void bfoAirportToAirportMaxDistance(const std::string &sourceCode, const std::string &targetCode, int maxDistance);
 
-    void bfoAirportToCityMaxDistance(const std::string& sourceCode, const std::string& targetCity, int maxDistance);
+    std::vector<std::pair<std::vector<Vertex<Airport> *>, int>> shortestPathsWithinDistance(
+            Vertex<Airport> *startAirport, Vertex<Airport> *endAirport, int maxDistance);
 
-    std::vector<std::pair<std::vector<Vertex<Airport>*>, int>> shortestPathsToCityWithinDistance(
-            Vertex<Airport>* startAirport, const std::string& cityName, int maxDistance);
+    void bfoAirportToCityMaxDistance(const std::string &sourceCode, const std::string &targetCity, int maxDistance);
 
-    void bfoAirportToCoordinatesMaxDistance(const std::string& sourceCode, double lat, double lon, int maxDistance);
+    std::vector<std::pair<std::vector<Vertex<Airport> *>, int>> shortestPathsToCityWithinDistance(
+            Vertex<Airport> *startAirport, const std::string &cityName, int maxDistance);
 
-    void bfoCityToAirportMaxDistance(const std::string& cityName, const std::string& airportCode, int maxDistance);
+    void bfoAirportToCoordinatesMaxDistance(const std::string &sourceCode, double lat, double lon, int maxDistance);
 
-    void bfoCityToCityMaxDistance(const std::string& sourceCity, const std::string& destCity, int maxDistance);
+    void bfoCityToAirportMaxDistance(const std::string &cityName, const std::string &airportCode, int maxDistance);
 
-    void bfoCityToCoordinatesMaxDistance(const std::string& cityName, double lat, double lon, int maxDistance);
+    void bfoCityToCityMaxDistance(const std::string &sourceCity, const std::string &destCity, int maxDistance);
 
-    void bfoCoordinatesToAirportMaxDistance(double sourceLat, double sourceLon, const std::string& targetAirportCode, int maxDistance);
+    void bfoCityToCoordinatesMaxDistance(const std::string &cityName, double lat, double lon, int maxDistance);
 
-    void bfoCoordinatesToCityMaxDistance(double sourceLat, double sourceLon, const std::string& targetCity, int maxDistance);
+    void bfoCoordinatesToAirportMaxDistance(double sourceLat, double sourceLon, const std::string &targetAirportCode,
+                                            int maxDistance);
 
-    void bfoCoordinatesToCoordinatesMaxDistance(double sourceLat, double sourceLon, double destLat, double destLon, int maxDistance);
+    void
+    bfoCoordinatesToCityMaxDistance(double sourceLat, double sourceLon, const std::string &targetCity, int maxDistance);
+
+    void bfoCoordinatesToCoordinatesMaxDistance(double sourceLat, double sourceLon, double destLat, double destLon,
+                                                int maxDistance);
 
 };
 

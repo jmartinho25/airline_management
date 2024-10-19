@@ -2118,11 +2118,24 @@ FlightManager::bfoCoordinatesToCoordinatesMaxStops(double sourceLat, double sour
 
 //MAX Flight Distance
 
+/**
+ * @brief Function takes an angle in degrees (deg) as input and transforms it into radians
+ * @details Time complexity: O(1)
+ * @param deg Angle in degrees
+ * @return Angle in radians
+ */
 double degToRad(double deg) {
     return deg * (M_PI / 180);
 }
 
-double calculateDistance(Vertex<Airport>* airport1, Vertex<Airport>* airport2) {
+/**
+ * @brief Function calculates the great-circle distance between two points (in this case two airports) on the Earth's surface using the Haversine formula
+ * @details Time complexity: O(1)
+ * @param airport1 First of the airports
+ * @param airport2 Second of the airports
+ * @return Distance in Km between the two airports
+ */
+double calculateDistance(Vertex<Airport> *airport1, Vertex<Airport> *airport2) {
     double lat1 = degToRad(airport1->getInfo().getLatitude());
     double lon1 = degToRad(airport1->getInfo().getLongitude());
     double lat2 = degToRad(airport2->getInfo().getLatitude());
@@ -2138,25 +2151,33 @@ double calculateDistance(Vertex<Airport>* airport1, Vertex<Airport>* airport2) {
     return RADIUS_EARTH_KM * c;
 }
 
-std::vector<std::pair<std::vector<Vertex<Airport>*>, int>> FlightManager::shortestPathsWithinDistance(
-        Vertex<Airport>* startAirport, Vertex<Airport>* endAirport, int maxDistance) {
+/**
+ * @brief Function finds all shortest paths from a specified start airport to a specified end airport, with a specified maximum of flight distance in the path (Distance in the "air", not simply the distance between the source and destination airports).
+ * @details Time complexity: O((V+E)log V), where V is the number of vertices in the graph and E is the number of edges. This time complexity comes from the use of Dijkstra's algorithm with a priority queue.
+ * @param startAirport Airport where the paths start
+ * @param endAirport Airport where the paths must end
+ * @param maxDistance Maximum distance done by plane
+ * @return Vector of vectors, where each inner vector represents a unique shortest path from the start airport to the end airport.
+ */
+std::vector<std::pair<std::vector<Vertex<Airport> *>, int>> FlightManager::shortestPathsWithinDistance(
+        Vertex<Airport> *startAirport, Vertex<Airport> *endAirport, int maxDistance) {
 
 
-
-    std::priority_queue<std::tuple<int, std::vector<Vertex<Airport>*>, int, int>,
-            std::vector<std::tuple<int, std::vector<Vertex<Airport>*>, int, int>>,
+    std::priority_queue<std::tuple<int, std::vector<Vertex<Airport> *>, int, int>,
+            std::vector<std::tuple<int, std::vector<Vertex<Airport> *>, int, int>>,
             std::greater<>> pq;
 
-    pq.push(std::make_tuple(0, std::vector<Vertex<Airport>*>{startAirport}, 0, calculateDistance(startAirport, endAirport)));
+    pq.push(std::make_tuple(0, std::vector<Vertex<Airport> *>{startAirport}, 0,
+                            calculateDistance(startAirport, endAirport)));
 
-    std::set<std::pair<std::vector<Vertex<Airport>*>, int>> uniquePaths;
+    std::set<std::pair<std::vector<Vertex<Airport> *>, int>> uniquePaths;
     int iterationCounter = 0;
 
     while (!pq.empty() && iterationCounter < MAX_ITERATIONS) {
         auto [currentStops, currentPath, currentTotalDistance, heuristicDistance] = pq.top();
         pq.pop();
 
-        Vertex<Airport>* currentNode = currentPath.back();
+        Vertex<Airport> *currentNode = currentPath.back();
 
         if (currentNode == endAirport && currentTotalDistance <= maxDistance) {
             uniquePaths.insert(std::make_pair(currentPath, currentTotalDistance));
@@ -2165,13 +2186,13 @@ std::vector<std::pair<std::vector<Vertex<Airport>*>, int>> FlightManager::shorte
 
         iterationCounter++;
 
-        for (const auto& flight : currentNode->getAdj()) {
+        for (const auto &flight: currentNode->getAdj()) {
             auto neighbor = flight.getDest();
             int flightDistance = calculateDistance(currentNode, neighbor);
 
             int newTotalDistance = currentTotalDistance + flightDistance;
             if (newTotalDistance <= maxDistance) {
-                std::vector<Vertex<Airport>*> newPath = currentPath;
+                std::vector<Vertex<Airport> *> newPath = currentPath;
                 newPath.push_back(neighbor);
                 int newHeuristicDistance = calculateDistance(neighbor, endAirport);
                 pq.push(std::make_tuple(currentStops + 1, newPath, newTotalDistance, newHeuristicDistance));
@@ -2179,12 +2200,19 @@ std::vector<std::pair<std::vector<Vertex<Airport>*>, int>> FlightManager::shorte
         }
     }
 
-    return std::vector<std::pair<std::vector<Vertex<Airport>*>, int>>(uniquePaths.begin(), uniquePaths.end());
+    return std::vector<std::pair<std::vector<Vertex<Airport> *>, int>>(uniquePaths.begin(), uniquePaths.end());
 }
 
 
-
-void FlightManager::bfoAirportToAirportMaxDistance(const std::string& sourceCode, const std::string& targetCode, int maxDistance) {
+/**
+ * @brief Function finds and displays the best flight options (shortest paths) between two airports, with a specified maximum of flight distance in the path.
+ * @details Time complexity: O((V+E)log V), where V is the number of vertices (airports) in the graph and E is the number of edges (flights).
+ * @param airportCode1 Airport where the paths start
+ * @param airportCode2 Airport where the paths must end
+ * @param maxDistance Maximum distance done by plane
+ */
+void FlightManager::bfoAirportToAirportMaxDistance(const std::string &sourceCode, const std::string &targetCode,
+                                                   int maxDistance) {
     auto sourceVertex = findAirportVertexByNameOrCode(sourceCode);
     auto targetVertex = findAirportVertexByNameOrCode(targetCode);
 
@@ -2203,29 +2231,39 @@ void FlightManager::bfoAirportToAirportMaxDistance(const std::string& sourceCode
     if (pathOptions.empty()) {
         std::cout << "No paths found within " << maxDistance << " km." << std::endl;
     } else {
-        for (const auto& [path, totalDistance] : pathOptions) {
-            std::cout << "Flight Option within " << maxDistance << " km (Total distance: " << totalDistance << " km, " << path.size() - 1 << " stops):" << std::endl;
-            for (const auto& airport : path) {
+        for (const auto &[path, totalDistance]: pathOptions) {
+            std::cout << "Flight Option within " << maxDistance << " km (Total distance: " << totalDistance << " km, "
+                      << path.size() - 1 << " stops):" << std::endl;
+            for (const auto &airport: path) {
                 std::cout << "- " << airport->getInfo().getName() << " (" << airport->getInfo().getCode() << ")"
-                          << " at coordinates (" << airport->getInfo().getLatitude() << ", " << airport->getInfo().getLongitude() << ")"
+                          << " at coordinates (" << airport->getInfo().getLatitude() << ", "
+                          << airport->getInfo().getLongitude() << ")"
                           << std::endl;
             }
         }
     }
 }
 
-std::vector<std::pair<std::vector<Vertex<Airport>*>, int>> FlightManager::shortestPathsToCityWithinDistance(
-        Vertex<Airport>* startAirport, const std::string& cityName, int maxDistance) {
+/**
+ * @brief Function finds all shortest paths from a specified start airport to any airport in a specified city (without printing it), with a specified maximum of flight distance in the path.
+ * @details Time complexity: O((V+E)log V), where V is the number of vertices in the graph and E is the number of edges. This time complexity comes from the use of Dijkstra's algorithm with a priority queue.
+ * @param startAirport Airport where the paths start
+ * @param cityName City where the paths must end
+ * @param maxDistance Maximum distance done by plane
+ * @return Vector of vectors, where each inner vector represents a unique shortest path from the start airport to the end airport of the trip.
+ */
+std::vector<std::pair<std::vector<Vertex<Airport> *>, int>> FlightManager::shortestPathsToCityWithinDistance(
+        Vertex<Airport> *startAirport, const std::string &cityName, int maxDistance) {
 
-    std::vector<Vertex<Airport>*> cityAirports = findAirportsInCity(cityName);
+    std::vector<Vertex<Airport> *> cityAirports = findAirportsInCity(cityName);
 
-    std::priority_queue<std::tuple<int, std::vector<Vertex<Airport>*>, int>,
-            std::vector<std::tuple<int, std::vector<Vertex<Airport>*>, int>>,
+    std::priority_queue<std::tuple<int, std::vector<Vertex<Airport> *>, int>,
+            std::vector<std::tuple<int, std::vector<Vertex<Airport> *>, int>>,
             std::greater<>> pq;
 
-    pq.push(std::make_tuple(0, std::vector<Vertex<Airport>*>{startAirport}, 0));
+    pq.push(std::make_tuple(0, std::vector<Vertex<Airport> *>{startAirport}, 0));
 
-    std::set<std::pair<std::vector<Vertex<Airport>*>, int>> uniquePaths;
+    std::set<std::pair<std::vector<Vertex<Airport> *>, int>> uniquePaths;
     int iterationCounter = 0;
 
     while (!pq.empty() && iterationCounter < MAX_ITERATIONS) {
@@ -2233,32 +2271,40 @@ std::vector<std::pair<std::vector<Vertex<Airport>*>, int>> FlightManager::shorte
         pq.pop();
         iterationCounter++;
 
-        Vertex<Airport>* currentNode = currentPath.back();
+        Vertex<Airport> *currentNode = currentPath.back();
 
-        if (std::find(cityAirports.begin(), cityAirports.end(), currentNode) != cityAirports.end() && currentTotalDistance <= maxDistance) {
+        if (std::find(cityAirports.begin(), cityAirports.end(), currentNode) != cityAirports.end() &&
+            currentTotalDistance <= maxDistance) {
             uniquePaths.insert(std::make_pair(currentPath, currentTotalDistance));
             continue;
         }
 
-        for (const auto& flight : currentNode->getAdj()) {
+        for (const auto &flight: currentNode->getAdj()) {
             auto neighbor = flight.getDest();
             int flightDistance = calculateDistance(currentNode, neighbor);
 
             int newTotalDistance = currentTotalDistance + flightDistance;
             if (newTotalDistance <= maxDistance) {
-                std::vector<Vertex<Airport>*> newPath = currentPath;
+                std::vector<Vertex<Airport> *> newPath = currentPath;
                 newPath.push_back(neighbor);
                 pq.push(std::make_tuple(currentStops + 1, newPath, newTotalDistance));
             }
         }
     }
 
-    return std::vector<std::pair<std::vector<Vertex<Airport>*>, int>>(uniquePaths.begin(), uniquePaths.end());
+    return std::vector<std::pair<std::vector<Vertex<Airport> *>, int>>(uniquePaths.begin(), uniquePaths.end());
 }
 
 
-
-void FlightManager::bfoAirportToCityMaxDistance(const std::string& sourceCode, const std::string& targetCity, int maxDistance) {
+/**
+ * @brief Function finds and displays the best flight options (shortest paths) from a given source airport to any airport in a specified city, with a specified maximum of flight distance in the path.
+ * @details Time complexity: O((V+E)log V), where V is the number of vertices (airports) in the graph and E is the number of edges (flights).
+ * @param airport Airport where the paths start
+ * @param cityName City in which the paths must end
+ * @param maxDistance Maximum distance done by plane
+ */
+void FlightManager::bfoAirportToCityMaxDistance(const std::string &sourceCode, const std::string &targetCity,
+                                                int maxDistance) {
     auto sourceVertex = findAirportVertexByNameOrCode(sourceCode);
     if (!sourceVertex) {
         std::cout << "Source airport not found." << std::endl;
@@ -2270,51 +2316,71 @@ void FlightManager::bfoAirportToCityMaxDistance(const std::string& sourceCode, c
     if (pathOptions.empty()) {
         std::cout << "No paths found within " << maxDistance << " km to " << targetCity << "." << std::endl;
     } else {
-        for (const auto& [path, totalDistance] : pathOptions) {
-            std::cout << "Flight Option to " << targetCity << " within " << maxDistance << " km (Total distance: " << totalDistance << " km, " << path.size() - 1 << " stops):" << std::endl;
-            for (const auto& airport : path) {
+        for (const auto &[path, totalDistance]: pathOptions) {
+            std::cout << "Flight Option to " << targetCity << " within " << maxDistance << " km (Total distance: "
+                      << totalDistance << " km, " << path.size() - 1 << " stops):" << std::endl;
+            for (const auto &airport: path) {
                 std::cout << "- " << airport->getInfo().getName() << " (" << airport->getInfo().getCode() << ")"
-                          << " at coordinates (" << airport->getInfo().getLatitude() << ", " << airport->getInfo().getLongitude() << ")"
+                          << " at coordinates (" << airport->getInfo().getLatitude() << ", "
+                          << airport->getInfo().getLongitude() << ")"
                           << std::endl;
             }
         }
     }
 }
 
-
-
-void FlightManager::bfoAirportToCoordinatesMaxDistance(const std::string& sourceCode, double lat, double lon, int maxDistance) {
+/**
+ * @brief Function finds and displays the best flight options (shortest paths) from a given source airport to the nearest airport(s) to specified coordinates (latitude and longitude), with a specified maximum of flight distance in the path.
+ * @details Time complexity: O((V+E)log V), where V is the number of vertices (airports) in the graph and E is the number of edges (flights).
+ * @param airportCode Airport where the paths start
+ * @param lat Latitude of the pair of coordinates
+ * @param lon Longitude of the pair of coordinates
+ * @param maxDistance Maximum distance done by plane
+ */
+void FlightManager::bfoAirportToCoordinatesMaxDistance(const std::string &sourceCode, double lat, double lon,
+                                                       int maxDistance) {
     auto sourceAirport = findAirportVertexByNameOrCode(sourceCode);
-    std::vector<Vertex<Airport>*> targetAirports = findNearestAirportToCoordinates(lat, lon);
+    std::vector<Vertex<Airport> *> targetAirports = findNearestAirportToCoordinates(lat, lon);
 
     if (!sourceAirport || targetAirports.empty()) {
         std::cout << "Source airport or nearest airport not found." << std::endl;
         return;
     }
 
-    std::vector<std::pair<std::vector<Vertex<Airport>*>, int>> bestPaths;
-    for (auto& destAirport : targetAirports) {
+    std::vector<std::pair<std::vector<Vertex<Airport> *>, int>> bestPaths;
+    for (auto &destAirport: targetAirports) {
         auto pathOptions = shortestPathsWithinDistance(sourceAirport, destAirport, maxDistance);
-        for (auto& pathOption : pathOptions) {
+        for (auto &pathOption: pathOptions) {
             bestPaths.push_back(pathOption);
         }
     }
 
     if (bestPaths.empty()) {
-        std::cout << "No flight path found from " << sourceCode << " to coordinates (" << lat << ", " << lon << ") within " << maxDistance << " km." << std::endl;
+        std::cout << "No flight path found from " << sourceCode << " to coordinates (" << lat << ", " << lon
+                  << ") within " << maxDistance << " km." << std::endl;
     } else {
-        for (const auto& [path, totalDistance] : bestPaths) {
-            std::cout << "Flight Option to coordinates (" << lat << ", " << lon << ") with " << path.size() - 1 << " stops (Total distance: " << totalDistance << " km):" << std::endl;
-            for (const auto& airport : path) {
+        for (const auto &[path, totalDistance]: bestPaths) {
+            std::cout << "Flight Option to coordinates (" << lat << ", " << lon << ") with " << path.size() - 1
+                      << " stops (Total distance: " << totalDistance << " km):" << std::endl;
+            for (const auto &airport: path) {
                 std::cout << "- " << airport->getInfo().getName() << " (" << airport->getInfo().getCode() << ")"
-                          << " at coordinates (" << airport->getInfo().getLatitude() << ", " << airport->getInfo().getLongitude() << ")"
+                          << " at coordinates (" << airport->getInfo().getLatitude() << ", "
+                          << airport->getInfo().getLongitude() << ")"
                           << std::endl;
             }
         }
     }
 }
 
-void FlightManager::bfoCityToAirportMaxDistance(const std::string& cityName, const std::string& airportCode, int maxDistance) {
+/**
+ * @brief Function finds and displays the best flight options (shortest paths) from any airport in a specified city to a given destination airport, with a specified maximum of flight distance in the path.
+ * @details Time complexity: O((V+E)log V), where V is the number of vertices (airports) in the graph and E is the number of edges (flights).
+ * @param cityName City in which the paths start
+ * @param airportCode Airport where the paths must end
+ * @param maxDistance Maximum distance done by plane
+ */
+void FlightManager::bfoCityToAirportMaxDistance(const std::string &cityName, const std::string &airportCode,
+                                                int maxDistance) {
     auto cityAirports = findAirportsInCity(cityName);
     auto targetAirport = findAirportVertexByNameOrCode(airportCode);
 
@@ -2328,27 +2394,37 @@ void FlightManager::bfoCityToAirportMaxDistance(const std::string& cityName, con
         return;
     }
 
-    std::vector<std::pair<std::vector<Vertex<Airport>*>, int>> pathOptions;
-    for (auto& cityAirport : cityAirports) {
+    std::vector<std::pair<std::vector<Vertex<Airport> *>, int>> pathOptions;
+    for (auto &cityAirport: cityAirports) {
         auto paths = shortestPathsWithinDistance(cityAirport, targetAirport, maxDistance);
         pathOptions.insert(pathOptions.end(), paths.begin(), paths.end());
     }
 
     if (pathOptions.empty()) {
-        std::cout << "No paths found within " << maxDistance << " km from " << cityName << " to " << airportCode << "." << std::endl;
+        std::cout << "No paths found within " << maxDistance << " km from " << cityName << " to " << airportCode << "."
+                  << std::endl;
     } else {
-        for (const auto& [path, totalDistance] : pathOptions) {
-            std::cout << "Flight Option within " << maxDistance << " km (Total distance: " << totalDistance << " km, " << path.size() - 1 << " stops):" << std::endl;
-            for (const auto& airport : path) {
+        for (const auto &[path, totalDistance]: pathOptions) {
+            std::cout << "Flight Option within " << maxDistance << " km (Total distance: " << totalDistance << " km, "
+                      << path.size() - 1 << " stops):" << std::endl;
+            for (const auto &airport: path) {
                 std::cout << "- " << airport->getInfo().getName() << " (" << airport->getInfo().getCode() << ")"
-                          << " at coordinates (" << airport->getInfo().getLatitude() << ", " << airport->getInfo().getLongitude() << ")"
+                          << " at coordinates (" << airport->getInfo().getLatitude() << ", "
+                          << airport->getInfo().getLongitude() << ")"
                           << std::endl;
             }
         }
     }
 }
 
-void FlightManager::bfoCityToCityMaxDistance(const std::string& sourceCity, const std::string& destCity, int maxDistance) {
+/**
+ * @details Time complexity: O((V+E)log V), where V is the number of vertices (airports) in the graph and E is the number of edges (flights).with a specified maximum of flight distance in the path.
+ * @param sourceCity City in which the paths start
+ * @param destCity City in which the paths must end
+ * @param maxDistance Maximum distance done by plane
+ */
+void
+FlightManager::bfoCityToCityMaxDistance(const std::string &sourceCity, const std::string &destCity, int maxDistance) {
     auto sourceAirports = findAirportsInCity(sourceCity);
     auto destAirports = findAirportsInCity(destCity);
 
@@ -2357,30 +2433,41 @@ void FlightManager::bfoCityToCityMaxDistance(const std::string& sourceCity, cons
         return;
     }
 
-    std::vector<std::pair<std::vector<Vertex<Airport>*>, int>> pathOptions;
-    for (auto& sourceAirport : sourceAirports) {
-        for (auto& destAirport : destAirports) {
+    std::vector<std::pair<std::vector<Vertex<Airport> *>, int>> pathOptions;
+    for (auto &sourceAirport: sourceAirports) {
+        for (auto &destAirport: destAirports) {
             auto paths = shortestPathsWithinDistance(sourceAirport, destAirport, maxDistance);
             pathOptions.insert(pathOptions.end(), paths.begin(), paths.end());
         }
     }
 
     if (pathOptions.empty()) {
-        std::cout << "No paths found within " << maxDistance << " km between " << sourceCity << " and " << destCity << "." << std::endl;
+        std::cout << "No paths found within " << maxDistance << " km between " << sourceCity << " and " << destCity
+                  << "." << std::endl;
     } else {
-        for (const auto& [path, totalDistance] : pathOptions) {
+        for (const auto &[path, totalDistance]: pathOptions) {
             std::cout << "Flight Option within " << maxDistance << " km between " << sourceCity << " and " << destCity
                       << " (Total distance: " << totalDistance << " km, " << path.size() - 1 << " stops):" << std::endl;
-            for (const auto& airport : path) {
+            for (const auto &airport: path) {
                 std::cout << "- " << airport->getInfo().getName() << " (" << airport->getInfo().getCode() << ")"
-                          << " at coordinates (" << airport->getInfo().getLatitude() << ", " << airport->getInfo().getLongitude() << ")"
+                          << " at coordinates (" << airport->getInfo().getLatitude() << ", "
+                          << airport->getInfo().getLongitude() << ")"
                           << std::endl;
             }
         }
     }
 }
 
-void FlightManager::bfoCityToCoordinatesMaxDistance(const std::string& cityName, double lat, double lon, int maxDistance) {
+/**
+ * @brief Function finds and displays the best flight options (shortest paths) between any airport in the specified city and the nearest airport(s) to the given coordinates, with a specified maximum of flight distance in the path.
+ * @details Time complexity: O((V+E)log V), where V is the number of vertices (airports) in the graph and E is the number of edges (flights).
+ * @param cityName City in which the paths start
+ * @param lat Latitude of the pair of coordinates
+ * @param lon Longitude of the pair of coordinates
+ * @param maxDistance Maximum distance done by plane
+ */
+void
+FlightManager::bfoCityToCoordinatesMaxDistance(const std::string &cityName, double lat, double lon, int maxDistance) {
     auto cityAirports = findAirportsInCity(cityName);
     if (cityAirports.empty()) {
         std::cout << "No airports found in the city: " << cityName << std::endl;
@@ -2393,30 +2480,42 @@ void FlightManager::bfoCityToCoordinatesMaxDistance(const std::string& cityName,
         return;
     }
 
-    std::vector<std::pair<std::vector<Vertex<Airport>*>, int>> pathOptions;
-    for (auto& cityAirport : cityAirports) {
-        for (auto& nearestAirport : nearestAirports) {
+    std::vector<std::pair<std::vector<Vertex<Airport> *>, int>> pathOptions;
+    for (auto &cityAirport: cityAirports) {
+        for (auto &nearestAirport: nearestAirports) {
             auto paths = shortestPathsWithinDistance(cityAirport, nearestAirport, maxDistance);
             pathOptions.insert(pathOptions.end(), paths.begin(), paths.end());
         }
     }
 
     if (pathOptions.empty()) {
-        std::cout << "No paths found within " << maxDistance << " km from " << cityName << " to coordinates (" << lat << ", " << lon << ")." << std::endl;
+        std::cout << "No paths found within " << maxDistance << " km from " << cityName << " to coordinates (" << lat
+                  << ", " << lon << ")." << std::endl;
     } else {
-        for (const auto& [path, totalDistance] : pathOptions) {
+        for (const auto &[path, totalDistance]: pathOptions) {
             std::cout << "Flight Option within " << maxDistance << " km from " << cityName << " to coordinates ("
-                      << lat << ", " << lon << ") (Total distance: " << totalDistance << " km, " << path.size() - 1 << " stops):" << std::endl;
-            for (const auto& airport : path) {
+                      << lat << ", " << lon << ") (Total distance: " << totalDistance << " km, " << path.size() - 1
+                      << " stops):" << std::endl;
+            for (const auto &airport: path) {
                 std::cout << "- " << airport->getInfo().getName() << " (" << airport->getInfo().getCode() << ")"
-                          << " at coordinates (" << airport->getInfo().getLatitude() << ", " << airport->getInfo().getLongitude() << ")"
+                          << " at coordinates (" << airport->getInfo().getLatitude() << ", "
+                          << airport->getInfo().getLongitude() << ")"
                           << std::endl;
             }
         }
     }
 }
 
-void FlightManager::bfoCoordinatesToAirportMaxDistance(double sourceLat, double sourceLon, const std::string& targetAirportCode, int maxDistance) {
+/**
+ * @brief Function finds and displays the best flight options (shortest paths) between the nearest airport(s) to the given coordinates and a specified airport, with a specified maximum of flight distance in the path.
+ * @details Time complexity: O((V+E)log V), where V is the number of vertices (airports) in the graph and E is the number of edges (flights).
+ * @param lat Latitude of the pair of coordinates
+ * @param lon Longitude of the pair of coordinates
+ * @param airportCode Airport in which the paths must end
+ * @param maxDistance Maximum distance done by plane
+ */
+void FlightManager::bfoCoordinatesToAirportMaxDistance(double sourceLat, double sourceLon,
+                                                       const std::string &targetAirportCode, int maxDistance) {
     auto nearestAirports = findNearestAirportToCoordinates(sourceLat, sourceLon);
     if (nearestAirports.empty()) {
         std::cout << "No nearby airport found for the given coordinates." << std::endl;
@@ -2429,65 +2528,89 @@ void FlightManager::bfoCoordinatesToAirportMaxDistance(double sourceLat, double 
         return;
     }
 
-    std::vector<std::pair<std::vector<Vertex<Airport>*>, int>> pathOptions;
-    for (auto& nearestAirport : nearestAirports) {
+    std::vector<std::pair<std::vector<Vertex<Airport> *>, int>> pathOptions;
+    for (auto &nearestAirport: nearestAirports) {
         auto paths = shortestPathsWithinDistance(nearestAirport, targetAirport, maxDistance);
         pathOptions.insert(pathOptions.end(), paths.begin(), paths.end());
     }
 
     if (pathOptions.empty()) {
-        std::cout << "No paths found within " << maxDistance << " km from coordinates (" << sourceLat << ", " << sourceLon << ") to " << targetAirportCode << "." << std::endl;
+        std::cout << "No paths found within " << maxDistance << " km from coordinates (" << sourceLat << ", "
+                  << sourceLon << ") to " << targetAirportCode << "." << std::endl;
     } else {
-        for (const auto& [path, totalDistance] : pathOptions) {
-            std::cout << "Flight Option within " << maxDistance << " km from coordinates (" << sourceLat << ", " << sourceLon << ") to " << targetAirportCode
+        for (const auto &[path, totalDistance]: pathOptions) {
+            std::cout << "Flight Option within " << maxDistance << " km from coordinates (" << sourceLat << ", "
+                      << sourceLon << ") to " << targetAirportCode
                       << " (Total distance: " << totalDistance << " km, " << path.size() - 1 << " stops):" << std::endl;
-            for (const auto& airport : path) {
+            for (const auto &airport: path) {
                 std::cout << "- " << airport->getInfo().getName() << " (" << airport->getInfo().getCode() << ")"
-                          << " at coordinates (" << airport->getInfo().getLatitude() << ", " << airport->getInfo().getLongitude() << ")"
+                          << " at coordinates (" << airport->getInfo().getLatitude() << ", "
+                          << airport->getInfo().getLongitude() << ")"
                           << std::endl;
             }
         }
     }
 }
 
-void FlightManager::bfoCoordinatesToCityMaxDistance(double sourceLat, double sourceLon, const std::string& targetCity, int maxDistance) {
+/**
+ * @brief Function finds and displays the best flight options (shortest paths) between the nearest airport(s) to the given coordinates and any airport in a specified city, with a specified maximum of flight distance in the path.
+ * @details Time complexity: O((V+E)log V), where V is the number of vertices (airports) in the graph and E is the number of edges (flights).
+ * @param lat Latitude of the pair of coordinates
+ * @param lon Longitude of the pair of coordinates
+ * @param cityName City in which the paths must end
+ * @param maxDistance Maximum distance done by plane
+ */
+void FlightManager::bfoCoordinatesToCityMaxDistance(double sourceLat, double sourceLon, const std::string &targetCity,
+                                                    int maxDistance) {
     auto nearestAirports = findNearestAirportToCoordinates(sourceLat, sourceLon);
     if (nearestAirports.empty()) {
         std::cout << "No nearby airport found for the given coordinates." << std::endl;
         return;
     }
 
-    std::vector<Vertex<Airport>*> cityAirports = findAirportsInCity(targetCity);
+    std::vector<Vertex<Airport> *> cityAirports = findAirportsInCity(targetCity);
     if (cityAirports.empty()) {
         std::cout << "No airports found in the city: " << targetCity << std::endl;
         return;
     }
 
-    std::vector<std::pair<std::vector<Vertex<Airport>*>, int>> pathOptions;
-    for (auto& nearestAirport : nearestAirports) {
-        for (auto& cityAirport : cityAirports) {
+    std::vector<std::pair<std::vector<Vertex<Airport> *>, int>> pathOptions;
+    for (auto &nearestAirport: nearestAirports) {
+        for (auto &cityAirport: cityAirports) {
             auto paths = shortestPathsWithinDistance(nearestAirport, cityAirport, maxDistance);
             pathOptions.insert(pathOptions.end(), paths.begin(), paths.end());
         }
     }
 
     if (pathOptions.empty()) {
-        std::cout << "No paths found within " << maxDistance << " km from coordinates (" << sourceLat << ", " << sourceLon << ") to " << targetCity << "." << std::endl;
+        std::cout << "No paths found within " << maxDistance << " km from coordinates (" << sourceLat << ", "
+                  << sourceLon << ") to " << targetCity << "." << std::endl;
     } else {
-        for (const auto& [path, totalDistance] : pathOptions) {
-            std::cout << "Flight Option within " << maxDistance << " km from coordinates (" << sourceLat << ", " << sourceLon << ") to " << targetCity
+        for (const auto &[path, totalDistance]: pathOptions) {
+            std::cout << "Flight Option within " << maxDistance << " km from coordinates (" << sourceLat << ", "
+                      << sourceLon << ") to " << targetCity
                       << " (Total distance: " << totalDistance << " km, " << path.size() - 1 << " stops):" << std::endl;
-            for (const auto& airport : path) {
+            for (const auto &airport: path) {
                 std::cout << "- " << airport->getInfo().getName() << " (" << airport->getInfo().getCode() << ")"
-                          << " at coordinates (" << airport->getInfo().getLatitude() << ", " << airport->getInfo().getLongitude() << ")"
+                          << " at coordinates (" << airport->getInfo().getLatitude() << ", "
+                          << airport->getInfo().getLongitude() << ")"
                           << std::endl;
             }
         }
     }
 }
 
-
-void FlightManager::bfoCoordinatesToCoordinatesMaxDistance(double sourceLat, double sourceLon, double destLat, double destLon, int maxDistance) {
+/**
+ * @brief Function finds and displays the best flight options (shortest paths) between the nearest airport(s) to the given source coordinates and the nearest airport(s) to the given destination coordinates, with a specified maximum of flight distance in the path.
+ * @details Time complexity: O((V+E)log V), where V is the number of vertices (airports) in the graph and E is the number of edges (flights).
+ * @param sourceLat Latitude of the pair of source coordinates
+ * @param sourceLon Longitude of the pair of source coordinates
+ * @param destLat Latitude of the pair of source coordinates
+ * @param destLon Longitude of the pair of source coordinates
+ * @param maxDistance Maximum distance done by plane
+ */
+void FlightManager::bfoCoordinatesToCoordinatesMaxDistance(double sourceLat, double sourceLon, double destLat,
+                                                           double destLon, int maxDistance) {
     auto sourceNearestAirports = findNearestAirportToCoordinates(sourceLat, sourceLon);
     auto destNearestAirports = findNearestAirportToCoordinates(destLat, destLon);
 
@@ -2496,23 +2619,27 @@ void FlightManager::bfoCoordinatesToCoordinatesMaxDistance(double sourceLat, dou
         return;
     }
 
-    std::vector<std::pair<std::vector<Vertex<Airport>*>, int>> pathOptions;
-    for (auto& sourceAirport : sourceNearestAirports) {
-        for (auto& destAirport : destNearestAirports) {
+    std::vector<std::pair<std::vector<Vertex<Airport> *>, int>> pathOptions;
+    for (auto &sourceAirport: sourceNearestAirports) {
+        for (auto &destAirport: destNearestAirports) {
             auto paths = shortestPathsWithinDistance(sourceAirport, destAirport, maxDistance);
             pathOptions.insert(pathOptions.end(), paths.begin(), paths.end());
         }
     }
 
     if (pathOptions.empty()) {
-        std::cout << "No paths found within " << maxDistance << " km between coordinates (" << sourceLat << ", " << sourceLon << ") and (" << destLat << ", " << destLon << ")." << std::endl;
+        std::cout << "No paths found within " << maxDistance << " km between coordinates (" << sourceLat << ", "
+                  << sourceLon << ") and (" << destLat << ", " << destLon << ")." << std::endl;
     } else {
-        for (const auto& [path, totalDistance] : pathOptions) {
-            std::cout << "Flight Option within " << maxDistance << " km between coordinates (" << sourceLat << ", " << sourceLon << ") and (" << destLat << ", " << destLon
-                      << ") (Total distance: " << totalDistance << " km, " << path.size() - 1 << " stops):" << std::endl;
-            for (const auto& airport : path) {
+        for (const auto &[path, totalDistance]: pathOptions) {
+            std::cout << "Flight Option within " << maxDistance << " km between coordinates (" << sourceLat << ", "
+                      << sourceLon << ") and (" << destLat << ", " << destLon
+                      << ") (Total distance: " << totalDistance << " km, " << path.size() - 1 << " stops):"
+                      << std::endl;
+            for (const auto &airport: path) {
                 std::cout << "- " << airport->getInfo().getName() << " (" << airport->getInfo().getCode() << ")"
-                          << " at coordinates (" << airport->getInfo().getLatitude() << ", " << airport->getInfo().getLongitude() << ")"
+                          << " at coordinates (" << airport->getInfo().getLatitude() << ", "
+                          << airport->getInfo().getLongitude() << ")"
                           << std::endl;
             }
         }

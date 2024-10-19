@@ -17,7 +17,7 @@ public:
     * @brief  Constructor of the Menu Class
     * @param system FlightManager object used in the program
     */
-    Menu(FlightManager &system) : managementSystem(system) {};
+    Menu(FlightManager &system);;
 
     void displayMenu();
 

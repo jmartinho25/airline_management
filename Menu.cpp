@@ -1045,3 +1045,5 @@ void Menu::bfoCoordinatesToCoordinatesMaxDistance() {
 
     managementSystem.bfoCoordinatesToCoordinatesMaxDistance(sourceLat, sourceLon, destLat, destLon, maxDistance);
 }
+
+Menu::Menu(FlightManager &system) : managementSystem(system) {}
